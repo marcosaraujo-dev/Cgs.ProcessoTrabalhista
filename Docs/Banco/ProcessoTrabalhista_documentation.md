@@ -1,4 +1,4 @@
-# 📋 Documentação Completa do Sistema eSocial - Processos Trabalhistas #
+# 📋 Documentação Base de Dados - Processos Trabalhistas #
 
 ## **Eventos S-2500 (Processo Trabalhista) e S-2501 (Tributos Decorrentes)** ##
 
