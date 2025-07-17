@@ -1,8 +1,8 @@
-**Documentação Completa do Sistema eSocial - Processos Trabalhistas**
+# 📋 Documentação Completa do Sistema eSocial - Processos Trabalhistas #
 
-**Eventos S-2500 (Processo Trabalhista) e S-2501 (Tributos Decorrentes)**
+## **Eventos S-2500 (Processo Trabalhista) e S-2501 (Tributos Decorrentes)** ##
 
-**1\. Visão Geral do Sistema**
+### **1\. Visão Geral do Sistema** ###
 
 Este sistema foi desenvolvido para gerenciar os cadastros e transmissões dos eventos S-2500 (Processo Trabalhista) e S-2501 (Tributos Decorrentes de Processo Trabalhista) do eSocial.
 
@@ -14,10 +14,11 @@ Este sistema foi desenvolvido para gerenciar os cadastros e transmissões dos ev
 - **Cálculo de Tributos**: Gestão dos tributos decorrentes do processo (S-2501)
 - **Transmissão Individual**: Envio por trabalhador, mesmo em processos com múltiplos funcionários
 
-**2\. Estruturas Hierárquicas dos Dados**
+## **2\. Estruturas Hierárquicas dos Dados** ##
 
-**2.1 Estrutura S-2500 (Processo Trabalhista)**
+### **2.1 Estrutura S-2500 (Processo Trabalhista)** ###
 
+<pre>
 ptrab_CadastroProcesso (nrProcTrab)
 └── ptrab_ProcessoTrabalhista (ideTrab)
     └── ptrab_InformacaoContrato (infoContr)
@@ -31,9 +32,10 @@ ptrab_CadastroProcesso (nrProcTrab)
                     ├── ptrab_BaseCalculoFGTS (infoFGTS)
                     ├── ptrab_BaseCalculoMudancaCategoria (baseMudCateg)
                     └── ptrab_infoIntermitente (infoInterm)
-
-**2.2 Estrutura S-2501 (Tributos Decorrentes)**
-
+</pre>
+            
+### **2.2 Estrutura S-2501 (Tributos Decorrentes)** ###
+<pre>
 ptrab_CadastroProcesso (processo base)
 └── ptrab_TributosProcessoHeader (perApurPgto)
     └── ptrab_TributosTrabalhador (ideTrab)
@@ -52,10 +54,11 @@ ptrab_CadastroProcesso (processo base)
         │           └── ptrab_BeneficiariosPensaoSuspensa (benefPen)
         └── ptrab_IRRFComplementar (infoIRComplem)
             └── ptrab_InfoDepNaoCadastrado (infoDep)
+</pre>
 
-**3\. Documentação Detalhada das Tabelas**
+## **3\. Documentação Detalhada das Tabelas** ##
 
-**3.1 Tabelas de Domínio (Lookup)**
+### **3.1 Tabelas de Domínio (Lookup)** ###
 
 **ptrab_status**
 
@@ -187,9 +190,8 @@ ptrab_CadastroProcesso (processo base)
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
 | TipoPensaoAlimenticiaId | INT IDENTITY | Sim | Chave primária | \-  | Controle Interno | ID interno |
-| TipoPensaoAlimenticiaC |     |     |     |     |     |     |
-
-ódigo | INT | Sim | Código do tipo | pensAlim | infoDeslig | 0=Não existe, 1=Percentual, 2=Valor, 3=Ambos | | Descricao | VARCHAR(70) | Sim | Descrição do tipo | - | Controle Interno | Descrição do tipo |
+| TipoPensaoAlimenticiaCódigo | INT | Sim | Código do tipo | pensAlim | infoDeslig | 0=Não existe, 1=Percentual, 2=Valor, 3=Ambos | 
+| Descricao | VARCHAR(70) | Sim | Descrição do tipo | - | Controle Interno | Descrição do tipo |
 
 **ptrab_TipoMotivoDesligamentoTSV**
 
@@ -365,7 +367,7 @@ ptrab_CadastroProcesso (processo base)
 | UsuarioEnvioTransmissao | VARCHAR(200) | Não | Usuário que enviou para transmissão | \-  | Controle Interno | Controle transmissão |
 | DataEnvioTransmissao | DATETIME | Não | Data/hora do envio | \-  | Controle Interno | Controle transmissão |
 
-**3.3 Trabalhadores do Processo**
+### **3.3 Trabalhadores do Processo** ###
 
 **ptrab_ProcessoTrabalhista**
 
@@ -392,7 +394,7 @@ ptrab_CadastroProcesso (processo base)
 | DataEnvioTransmissao | DATETIME | Não | Data/hora envio Transmissão | \-  | Controle Interno | Auditoria |
 |     |     |     |     |     |     |     |
 
-**3.4 S-2500: Processo Trabalhista Detalhado**
+### **3.4 S-2500: Processo Trabalhista Detalhado** ###
 
 **ptrab_InformacaoContrato**
 
@@ -471,9 +473,9 @@ ptrab_CadastroProcesso (processo base)
 | DataDesligamento | DATETIME | Não | Data de desligamento | dtDeslig | infoDeslig | Último dia trabalhado |
 | MotivoDesligamentoId | INT | Não | Motivo do desligamento | mtvDeslig | infoDeslig | FK esoc_MotivoDesligamento → MotivoDesligamentoCodigo |
 | DataProjetadaFimAviso | DATETIME | Não | Data projetada fim aviso | dtProjFimAPI | infoDeslig | Data fim aviso prévio |
-| TipoPensaoAlimenticiaId | INT | Não | Tipo pensão alimentícia | pensAlim | infoDeslig | FK ptrab_TipoPensaoAlimenticia → TipoPensaoAlimenticiaC |
-
-ódigo | | PercentualAlimenticia | DECIMAL(5,2) | Não | Percentual alimentícia | percAliment | infoDeslig | Percentual da pensão | | ValorAlimenticia | MONEY | Não | Valor alimentícia | vrAlim | infoDeslig | Valor fixo da pensão |
+| TipoPensaoAlimenticiaId | INT | Não | Tipo pensão alimentícia | pensAlim | infoDeslig | FK ptrab_TipoPensaoAlimenticia → TipoPensaoAlimenticiaCodigo |
+| PercentualAlimenticia | DECIMAL(5,2) | Não | Percentual alimentícia | percAliment | Percentual da pensão |
+| ValorAlimenticia | MONEY | Não | Valor alimentícia | vrAlim | Valor fixo da pensão|
 
 **Informações de Término TSVE (infoTerm):**
 
@@ -499,7 +501,7 @@ ptrab_CadastroProcesso (processo base)
 | UsuarioAlteracao | VARCHAR(200) | Não | Usuário alteração | \-  | Controle Interno | Auditoria |
 | DataAlteracao | DATETIME | Não | Data/hora alteração | \-  | Controle Interno | Auditoria |
 
-**3.5 Tabelas Complementares S-2500**
+### **3.5 Tabelas Complementares S-2500** ###
 
 **ptrab_UnicidadeContratual**
 
@@ -613,7 +615,7 @@ ptrab_CadastroProcesso (processo base)
 | DiaTrabalho | INT | Sim | Dia do trabalho | dia | infoInterm | 0-31 (0=não trabalhou) |
 | HorasTrabalhadasDia | VARCHAR(4) | Condicional | Horas trabalhadas | hrsTrab | infoInterm | HHMM - obrigatório se dia > 0 |
 
-**3.6 S-2501: Tributos Decorrentes**
+### **3.6 S-2501: Tributos Decorrentes** ###
 
 **ptrab_TributosProcessoHeader**
 
@@ -833,9 +835,9 @@ ptrab_CadastroProcesso (processo base)
 | TipoDependente | VARCHAR(2) | Sim | Tipo de dependente | tpDep | infoDep | FK TipoDependente → TipoDependenteCodigo |
 | DescricaoDependente | VARCHAR(60) | Condicional | Descrição da dependência | descrDep | infoDep | Obrigatório se tpDep = 99 |
 
-**4\. Relacionamentos e Constraints Importantes**
+## **4\. Relacionamentos e Constraints Importantes** ##
 
-**4.1 Chaves Estrangeiras com CASCADE DELETE**
+### **4.1 Chaves Estrangeiras com CASCADE DELETE** ###
 
 ```
 sql
@@ -862,7 +864,7 @@ DataCCP IS NOT NULL
 
 ```
 
-**4.2 Constraints de Validação Específicas**
+### **4.2 Constraints de Validação Específicas** ###
 
 **Validações por Origem do Processo:**
 
@@ -923,7 +925,7 @@ _\-- Rendimento isento não tributável: descrição obrigatória se valor preen
 
 ```
 
-**4.3 Índices de Performance**
+### **4.3 Índices de Performance** ###
 
 **Índices Principais:**
 
@@ -968,9 +970,9 @@ ON ptrab_IRRFCodigoReceita (TributosTrabalhadorId)
 
 ```
 
-**5\. Campos de Auditoria Padrão**
+## **5\. Campos de Auditoria Padrão** 
 
-**5.1 Estrutura Padrão de Auditoria**
+### **5.1 Estrutura Padrão de Auditoria** ###
 
 Todas as tabelas principais possuem os seguintes campos:
 
@@ -983,7 +985,7 @@ Todas as tabelas principais possuem os seguintes campos:
 | UsuarioEnvioTransmissao | VARCHAR(200) | Usuário que enviou para o eSocial | Processo de transmissão |
 | DataEnvioTransmissao | DATETIME | Data/hora do envio | Processo de transmissão |
 
-**5.2 Status de Processamento**
+### **5.2 Status de Processamento** ###
 
 | **Código** | **Descrição** | **Tipo** | **Uso** |
 | --- | --- | --- | --- |
@@ -998,23 +1000,23 @@ Todas as tabelas principais possuem os seguintes campos:
 | IRRF_PROCESSADO | IRRF Processado | IRRF | Processamento concluído |
 | IRRF_ERRO | Erro no Cálculo IRRF | IRRF | Erro no processamento |
 
-**6\. Considerações de Implementação**
+## **6\. Considerações de Implementação** ##
 
-**6.1 Transmissão Individual por Trabalhador**
+### **6.1 Transmissão Individual por Trabalhador** ###
 
 - Cada trabalhador é transmitido separadamente no S-2500
 - Mesmo processo pode ter múltiplas transmissões
 - Controle individual de status por trabalhador
 - Relacionamento 1:N entre processo e trabalhadores
 
-**6.2 Competências S-2501**
+### **6.2 Competências S-2501** ###
 
 - Uma competência por transmissão S-2501
 - Múltiplos trabalhadores por competência
 - Relacionamento direto com S-2500 correspondente
 - Controle de integridade entre eventos
 
-**6.3 Validações de Negócio Críticas**
+### **6.3 Validações de Negócio Críticas** ###
 
 **Hierarquia Obrigatória:**
 
@@ -1035,7 +1037,7 @@ Todas as tabelas principais possuem os seguintes campos:
 - Dependentes com CPF válido (11 dígitos)
 - Descrições obrigatórias quando valores específicos preenchidos
 
-**6.4 Performance e Otimização**
+### **6.4 Performance e Otimização** ###
 
 **Particionamento Sugerido:**
 
@@ -1075,9 +1077,9 @@ SELECT \* FROM ptrab_IRRFCodigoReceita WHERE TributosTrabalhadorId = @id
 
 ```
 
-**7\. Scripts de Manutenção Recomendados**
+## **7\. Scripts de Manutenção Recomendados** ##
 
-**7.1 Limpeza de Dados Órfãos**
+## **7.1 Limpeza de Dados Órfãos** ##
 
 
 ```
@@ -1101,7 +1103,7 @@ WHERE cp.CadastroProcessoId IS NULL
 
 ```
 
-**7.2 Monitoramento de Performance**
+## **7.2 Monitoramento de Performance** ##
 
 ```
 sql
@@ -1128,7 +1130,7 @@ ORDER BY CompetenciaPagamento DESC
 
 ```
 
-**7.3 Auditoria de Transmissões**
+## **7.3 Auditoria de Transmissões** ##
 
 ```
 sql
@@ -1157,9 +1159,9 @@ ORDER BY th.CompetenciaPagamento DESC, th.StatusEnvio
 
 ```
 
-**8\. Mapeamento Grupos XML por Evento**
+## **8\. Mapeamento Grupos XML por Evento** ##
 
-**8.1 Grupos XML S-2500 (evtProcTrab)**
+### **8.1 Grupos XML S-2500 (evtProcTrab)** ###
 
 - **evtProcTrab** (raiz): Dados básicos do processo
 - **ideEmpregador**: Identificação do empregador
@@ -1187,7 +1189,7 @@ ORDER BY th.CompetenciaPagamento DESC, th.StatusEnvio
 - **baseMudCateg**: Bases por mudança categoria
 - **infoInterm**: Trabalho intermitente
 
-**8.2 Grupos XML S-2501 (evtCS)**
+ ### **8.2 Grupos XML S-2501 (evtCS)** ###
 
 - **evtCS** (raiz): Dados básicos dos tributos
 - **ideTrab**: Identificação do trabalhador
@@ -1207,7 +1209,7 @@ ORDER BY th.CompetenciaPagamento DESC, th.StatusEnvio
 - **infoIRComplem**: IRRF complementar
 - **infoDep**: Dependentes não cadastrados
 
-**Observações Importantes:**
+### **Observações Importantes:** ###
 
 1. **Nomenclatura XML**: Os campos CampoXML correspondem exatamente às tags XML do eSocial conforme Manual Técnico v1.3
 2. **Grupos XML**: A coluna "Grupo XML" indica o grupo/contexto onde cada campo aparece no XML
