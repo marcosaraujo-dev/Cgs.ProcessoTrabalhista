@@ -15,7 +15,12 @@ Desenvolver sistema desktop para cadastro, validação e geração de eventos eS
 
 ### **Escopo da Fase 1**
 - Cadastro completo de Processos Trabalhistas (S-2500)
-- Cadastro de Tributos Decorrentes (S-2501)
+	- Cadastro do processo Judicial (CRUD)
+	- Cadastro do processo Trabalhista (CRUD)
+		- Dados Trabalhador
+		- Contrato
+- Cadastro de Tributos Decorrentes (S-2501) (CRUD)
+- Validaçao dos dados
 - Geração e validação de XMLs
 - Interface idêntica aos padrões eSocial Web
 
