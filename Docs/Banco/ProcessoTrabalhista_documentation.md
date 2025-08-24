@@ -312,7 +312,9 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_CadastroProcesso**
 
-**Finalidade**: Tabela raiz que armazena os dados básicos do processo trabalhista
+**Finalidade**: Tabela raiz que armazena os dados básicos do processo trabalhista.Contém informações gerais do processo, dados do empregador, responsável indireto, informações de processo judicial ou CCP/NINTER, e dados de auditoria.
+
+**Relacionamentos:** `ptrab_TipoOrigem`, `ptrab_status`, `ptrab_TipoInscricao`, `ptrab_TipoCCP`.
 
 **Campos Principais:**
 
@@ -371,7 +373,9 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_ProcessoTrabalhista**
 
-**Finalidade**: Array de trabalhadores vinculados ao processo
+**Finalidade**: Detalha os trabalhadores envolvidos em um processo trabalhista. Contém CPF, nome, data de nascimento e `ideSeqTrab` (identificador sequencial do trabalhador no processo).
+
+**Relacionamentos:** `ptrab_CadastroProcesso` (um processo pode ter vários trabalhadores), `ptrab_Status`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -381,6 +385,7 @@ ptrab_CadastroProcesso (processo base)
 | Nome | VARCHAR(70) | Não | Nome do trabalhador | nmTrab | ideTrab | Nome completo |
 | DataNascimento | DATETIME | Não | Data de nascimento | dtNascto | ideTrab | Data nascimento |
 | ideSeqTrab | INT | Não | Sequencial do trabalhador | ideSeqTrab | ideTrab | Sequencial por processo |
+| StatusId | INT | Sim | Status do processo | \-  | Controle Interno | FK ptrab_status → StatusId |
 
 **Campos de Auditoria:**
 
@@ -398,7 +403,9 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_InformacaoContrato**
 
-**Finalidade**: Detalhamento completo do processo trabalhista por trabalhador (Evento S-2500)
+**Finalidade**: Armazena as informações do contrato de trabalho do trabalhador dentro de um processo. Inclui tipo de contrato, indicadores, datas, matrícula, categoria, informações de remuneração, regime trabalhista/previdenciário, duração do contrato, sucessão de vínculo, desligamento e mudança de categoria.
+
+**Relacionamentos:** `ptrab_ProcessoTrabalhista`, `ptrab_Status`, `ptrab_TipoContrato`, `esoc_Categoria`, `ptrab_TipoNaturezaAtividade`, `ptrab_TipoUnidadePagamento`, `ptrab_TipoRegimeTrabalhista`, `ptrab_TipoRegimePrevidenciario`, `ptrab_TipoContratoTempoParcial`, `ptrab_TipoDuracaoContrato`, `ptrab_TipoInscricao` (para sucessão), `esoc_MotivoDesligamento`, `ptrab_TipoPensaoAlimenticia`, `ptrab_TipoMotivoDesligamentoTSV`.
 
 **Campos de Controle:**
 
@@ -406,7 +413,7 @@ ptrab_CadastroProcesso (processo base)
 | --- | --- | --- | --- | --- | --- | --- |
 | InformacaoContratoId | INT IDENTITY | Sim | Chave primária | \-  | Controle Interno | ID interno |
 | ProcessoTrabalhistaId | INT | Sim | FK para trabalhador | \-  | Controle Interno | FK ptrab_ProcessoTrabalhista → ProcessoTrabalhistaId |
-| StatusId | INT | Sim | Status do processo | \-  | Controle Interno | FK ptrab_status → StatusId |
+
 
 **Informações do Contrato (infoContr):**
 
@@ -505,7 +512,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_UnicidadeContratual**
 
-**Finalidade**: Informações de unicidade contratual
+**Finalidade**: Informações de unicidade contratual, se aplicável.
+**Relacionamentos:** `ptrab_InformacaoContrato`, `esoc_Categoria`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -517,7 +525,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_EstabelecimentoPagamento**
 
-**Finalidade**: Estabelecimento responsável pelo pagamento
+**Finalidade**:  Informações do estabelecimento responsável pelo pagamento.
+**Relacionamentos:** `ptrab_InformacaoContrato`, `ptrab_TipoInscricao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -528,7 +537,9 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_PeriodoValores**
 
-**Finalidade**: Períodos e valores do processo
+**Finalidade**: Períodos e valores relacionados ao processo.
+
+**Relacionamentos:** `ptrab_EstabelecimentoPagamento`, `ptrab_TipoIndicativoRepercussao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -542,7 +553,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_AbonoSalarial**
 
-**Finalidade**: Informações de abono salarial
+**Finalidade**: Detalhes sobre abono salarial.
+**Relacionamentos:** `ptrab_PeriodoValores`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -552,7 +564,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_PeriodoApuracao**
 
-**Finalidade**: Períodos de apuração
+**Finalidade**: Períodos de apuração.
+**Relacionamentos:** `ptrab_PeriodoValores`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -562,7 +575,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_BaseCalculoPrevidencia**
 
-**Finalidade**: Bases de cálculo previdenciárias
+**Finalidade**: Bases de cálculo previdenciárias.
+**Relacionamentos:** `ptrab_PeriodoApuracao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -573,7 +587,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_AgenteNocivo**
 
-**Finalidade**: Informações de agentes nocivos
+**Finalidade**: Informações sobre agentes nocivos.
+ **Relacionamentos:** `ptrab_BaseCalculoPrevidencia`, `ptrab_TipoInfoAgNocivo`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -583,7 +598,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_BaseCalculoFGTS**
 
-**Finalidade**: Bases de cálculo FGTS
+**Finalidade**: Bases de cálculo FGTS.
+**Relacionamentos:** `ptrab_PeriodoApuracao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -595,7 +611,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_BaseCalculoMudancaCategoria**
 
-**Finalidade**: Bases de cálculo por mudança de categoria
+**Finalidade**: Bases de cálculo por mudança de categoria.
+**Relacionamentos:** `ptrab_PeriodoApuracao`, `esoc_Categoria`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -606,7 +623,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_infoIntermitente**
 
-**Finalidade**: Informações relativas ao trabalho intermitente
+**Finalidade**: Informações relativas ao trabalho intermitente.
+**Relacionamentos:** `ptrab_PeriodoApuracao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -616,15 +634,17 @@ ptrab_CadastroProcesso (processo base)
 | HorasTrabalhadasDia | VARCHAR(4) | Condicional | Horas trabalhadas | hrsTrab | infoInterm | HHMM - obrigatório se dia > 0 |
 
 ### **3.6 S-2501: Tributos Decorrentes** ###
+Estruturas dedicadas às informações de tributos decorrentes de processo trabalhista.
 
 **ptrab_TributosProcessoHeader**
 
-**Finalidade**: Cabeçalho dos tributos por competência (S-2501)
+**Finalidade**: Cabeçalho dos tributos decorrentes do processo. Contém a competência de pagamento e observações.
+ **Relacionamentos:** `ptrab_ProcessoTrabalhista`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
 | TributosProcessoHeaderId | INT IDENTITY | Sim | Chave primária | \-  | Controle Interno | ID interno |
-| CadastroProcessoId | INT | Sim | FK processo | \-  | Controle Interno | FK ptrab_CadastroProcesso → CadastroProcessoId |
+| ProcessoTrabalhistaId | INT | Sim | FK processo Trabalhista | \-  | Controle Interno | FK ptrab_ProcessoTrabalhista → ProcessoTrabalhistaId |
 | CompetenciaPagamento | VARCHAR(7) | Sim | Competência pagamento | perApurPgto | evtCS (raiz) | YYYY-MM |
 | ObservacoesPagamento | VARCHAR(999) | Não | Observações | obs | evtCS (raiz) | Observações do pagamento |
 | StatusEnvio | INT | Sim | Status do envio | \-  | Controle Interno | 1=Pendente, 2=Enviado, 3=Processado, 4=Erro |
@@ -642,7 +662,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_TributosTrabalhador**
 
-**Finalidade**: Trabalhadores com tributos
+**Finalidade**: Vincula os trabalhadores aos tributos do processo.
+**Relacionamentos:** `ptrab_TributosProcessoHeader`, `ptrab_ProcessoTrabalhista`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -652,7 +673,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_CalculoTributosPeriodo**
 
-**Finalidade**: Cálculos de tributos por período
+**Finalidade**: Cálculos de tributos por período.
+**Relacionamentos:** `ptrab_TributosTrabalhador`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -664,7 +686,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_ContribuicaoCodigoReceita**
 
-**Finalidade**: Contribuições por código de receita
+**Finalidade**: Contribuições por código de receita.
+**Relacionamentos:** `ptrab_CalculoTributosPeriodo`, `esoc_CodigoReceitaReclamatoriaTrabalhista`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -677,7 +700,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_IRRFCodigoReceita**
 
-**Finalidade**: IRRF por código de receita
+**Finalidade**: IRRF por código de receita.
+**Relacionamentos:** `ptrab_TributosTrabalhador`, `esoc_TipoCodigoReceitaIRRF`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -688,7 +712,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_InformacaoIRRF**
 
-**Finalidade**: Informações complementares relativas ao IRRF
+**Finalidade**: Informações complementares de IRRF.
+**Relacionamentos:** `ptrab_IRRFCodigoReceita`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -716,7 +741,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_DespesasProcessoJudicial**
 
-**Finalidade**: Despesas de processo judicial
+**Finalidade**: Despesas de processo judicial.
+**Relacionamentos:** `ptrab_RendimentosRRA`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -727,7 +753,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_AdvogadosRRA**
 
-**Finalidade**: Identificação dos advogados
+**Finalidade**: Identificação dos advogados em RRA.
+**Relacionamentos:** `ptrab_RendimentosRRA`, `ptrab_TipoInscricao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -739,7 +766,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_DeducaoDependentes**
 
-**Finalidade**: Dedução de dependentes
+**Finalidade**: Dedução de dependentes.
+**Relacionamentos:** `ptrab_IRRFCodigoReceita`, `ptrab_TipoRendimento`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -752,6 +780,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_PensaoAlimenticia**
 
 **Finalidade**: Pensão alimentícia
+**Relacionamentos:** `ptrab_IRRFCodigoReceita`, `ptrab_TipoRendimento`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -764,6 +793,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_ProcessoRetencao**
 
 **Finalidade**: Processos de retenção
+**Relacionamentos:** `ptrab_IRRFCodigoReceita`, `ptrab_TipoProcesso`, `esoc_IndicativoSuspensao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -776,6 +806,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_ValoresRetencao**
 
 **Finalidade**: Valores de retenção
+**Relacionamentos:** `ptrab_ProcessoRetencao`, `ptrab_TipoIndicativoApuracao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -790,7 +821,8 @@ ptrab_CadastroProcesso (processo base)
 
 **ptrab_DeducoesSuspensas**
 
-**Finalidade**: Deduções suspensas
+**Finalidade**: Deduções suspensas.
+**Relacionamentos:** `ptrab_ProcessoRetencao`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -802,6 +834,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_BeneficiariosPensaoSuspensa**
 
 **Finalidade**: Beneficiários de pensão suspensa
+**Relacionamentos:** `ptrab_DeducoesSuspensas`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -813,6 +846,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_IRRFComplementar**
 
 **Finalidade**: Informações complementares de IRRF
+**Relacionamentos:** `ptrab_TributosTrabalhador`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -823,6 +857,7 @@ ptrab_CadastroProcesso (processo base)
 **ptrab_InfoDepNaoCadastrado**
 
 **Finalidade**: Informações de dependentes não cadastrados pelo S-2200/S-2205/S-2300
+**Relacionamentos:** `ptrab_IRRFComplementar`, `esoc_TipoDependente`.
 
 | **Campo** | **Tipo** | **Obrigatório** | **Descrição** | **CampoXML** | **Grupo XML** | **Observação** |
 | --- | --- | --- | --- | --- | --- | --- |

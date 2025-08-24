@@ -1,7 +1,7 @@
 -- =============================================
--- SCRIPT COMPLETO - BASE DE DADOS esoc_ial
+-- SCRIPT COMPLETO - BASE DE DADOS esocial
 -- Eventos S-2500 e S-2501 - Processos Trabalhistas
--- Autor: Sistema esoc_ial
+-- Autor: Sistema esocial
 -- Data: 2025-01-15
 -- =============================================
 
@@ -9,13 +9,13 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'esoc_ial')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'esocial')
 BEGIN
-    CREATE DATABASE esoc_ial;
+    CREATE DATABASE esocial;
 END
 GO
 
-USE esoc_ial;
+USE esocial;
 GO
 
 -- =============================================
@@ -148,7 +148,7 @@ Insert into ptrab_TipoContrato VALUES( 3, 'Trabalhador com vínculo formalizado,
 Insert into ptrab_TipoContrato VALUES( 4, 'Trabalhador com vínculo formalizado, com alteração na data de admissão e inclusão ou alteração de data de desligamento')
 Insert into ptrab_TipoContrato VALUES( 5, 'Empregado com reconhecimento de vínculo')
 Insert into ptrab_TipoContrato VALUES( 6, 'Trabalhador sem vínculo de emprego/estatutário (TSVE), sem reconhecimento de vínculo empregatício')
-Insert into ptrab_TipoContrato VALUES( 7, 'Trabalhador com vínculo de emprego formalizado em período anterior ao esoc_ial')
+Insert into ptrab_TipoContrato VALUES( 7, 'Trabalhador com vínculo de emprego formalizado em período anterior ao esocial')
 Insert into ptrab_TipoContrato VALUES( 8, 'Responsabilidade indireta')
 Insert into ptrab_TipoContrato VALUES( 9, 'Trabalhador cujos contratos foram unificados (unicidade contratual)')
 
@@ -806,8 +806,9 @@ CREATE TABLE [dbo].[ptrab_ProcessoTrabalhista] (
     [Nome] VARCHAR(70) NULL, -- nmTrab
     [DataNascimento] DATETIME NULL,  -- dtNascto
 	[ideSeqTrab] Integer NULL,  --ideSeqTrab
-   
-    -- Auditoria
+	[StatusId] INTEGER NOT NULL, -- FK para ptrab_Status
+    
+	-- Auditoria
     [UsuarioInclusao] VARCHAR(200) NOT NULL,
     [DataInclusao] DATETIME NOT NULL DEFAULT GETDATE(),
     [UsuarioAlteracao] VARCHAR(200) NULL,
@@ -819,6 +820,8 @@ CREATE TABLE [dbo].[ptrab_ProcessoTrabalhista] (
     CONSTRAINT [PK_ptrab_TrabalhadorProcesso] PRIMARY KEY ([ProcessoTrabalhistaId]),
     CONSTRAINT [FK_ptrab_TrabalhadorProcesso_CadastroProcesso] 
         FOREIGN KEY ([CadastroProcessoId]) REFERENCES [ptrab_CadastroProcesso] ([CadastroProcessoId]) ON DELETE CASCADE,
+    CONSTRAINT [FK_ptrab_TrabalhadorProcesso_ptrab_Status] 
+        FOREIGN KEY ([StatusId]) REFERENCES [ptrab_Status] ([StatusId]),
     
     CONSTRAINT [CK_ptrab_TrabalhadorProcesso_CPF] CHECK (LEN([CPF]) = 11),
     CONSTRAINT [UQ_ptrab_TrabalhadorProcesso_Processo_CPF] UNIQUE ([CadastroProcessoId], [CPF])
@@ -835,7 +838,6 @@ CREATE INDEX [IDX_ptrab_TrabalhadorProcesso_CPF] ON [ptrab_ProcessoTrabalhista] 
 CREATE TABLE [dbo].[ptrab_InformacaoContrato] (
     [InformacaoContratoId] INTEGER IDENTITY(1,1) NOT NULL,
     [ProcessoTrabalhistaId] INTEGER NOT NULL,
-    [StatusId] INTEGER NOT NULL, -- FK para ptrab_Status
     
     -- Informações do Contrato (infoContr)
     [TipoContratoId] INTEGER NOT NULL, -- tpContr (FK para ptrab_TipoContrato )
@@ -906,8 +908,6 @@ CREATE TABLE [dbo].[ptrab_InformacaoContrato] (
     CONSTRAINT [PK_ptrab_InformacaoContrato] PRIMARY KEY ([InformacaoContratoId]),
     CONSTRAINT [FK_ptrab_InformacaoContrato_ProcessoTrabalhista] 
         FOREIGN KEY ([ProcessoTrabalhistaId]) REFERENCES [ptrab_ProcessoTrabalhista] ([ProcessoTrabalhistaId]) ON DELETE CASCADE,
-    CONSTRAINT [FK_ptrab_InformacaoContrato_Status] 
-        FOREIGN KEY ([StatusId]) REFERENCES [ptrab_Status] ([StatusId]),
     CONSTRAINT [FK_ptrab_InformacaoContrato_TipoContrato] 
         FOREIGN KEY ([TipoContratoId]) REFERENCES [ptrab_TipoContrato] ([TipoContratoId]),
     CONSTRAINT [FK_ptrab_InformacaoContrato_Categoria] 

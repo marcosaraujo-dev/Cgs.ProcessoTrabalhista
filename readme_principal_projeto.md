@@ -1,34 +1,10 @@
-<div id="top"></div>
+# eSocial Processo Trabalhista
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
-  <p align="center">
-  <img src="images/logoCygnusTech.png" width="50%" \>
-  </p>
-
-<h1 align="center">eSocial Processo Trabalhista</h3>
-
-<!-- ABOUT THE PROJECT -->
-
-## Sobre o Projeto
-
-Sistema desktop para cadastro, validação e geração de eventos eSocial relacionados a processos trabalhistas
-
-## Objetivo
-
-**🏆 ** Sistema de referência para processos trabalhistas eSocial, com qualidade e usabilidade que superem as expectativas dos usuários acostumados ao eSocial Web oficial.
-
+> Sistema desktop para cadastro, validação e geração de eventos eSocial relacionados a processos trabalhistas
 
 [![C#](https://img.shields.io/badge/C%23-.NET%20Framework%204.8-blue.svg)](https://dotnet.microsoft.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue.svg)](https://postgresql.org/)
 [![eSocial](https://img.shields.io/badge/eSocial-v1.3-green.svg)](https://www.gov.br/esocial/)
-
 
 ## 🎯 **Objetivo**
 
@@ -117,7 +93,29 @@ Desenvolver sistema desktop integrado ao sistema base existente para gestão com
 - **[Especificação XML](docs/06-integracao/especificacao-xml-esocial.md)** - Leiautes v1.3
 - **[Exemplos XML](docs/06-integracao/exemplos-xml/)** - Templates por tipo de contrato
 
-- ## ⚙️ **Setup do Ambiente de Desenvolvimento**
+## 🚀 **Roadmap de Desenvolvimento**
+
+### **Sprint 1-4 (Fase 1) - 12 semanas**
+- ✅ **Análise e documentação** completa
+- 🔄 **Arquitetura e modelo de dados** PostgreSQL
+- 🔄 **Interface base** - tela principal + wizard framework
+- 🔄 **Tipos 1-3** implementação completa
+- 🔄 **Geração XML S-2500** e **S-2501** básico
+- 🔄 **Sistema de validações** core
+
+### **Sprint 5-8 (Fase 2) - 10 semanas**
+- 📋 **Tipos 4-6** implementação
+- 📋 **S-2555** consolidação de tributos
+- 📋 **S-3500** exclusão de eventos
+- 📋 **Relatórios** e consultas avançadas
+- 📋 **Otimizações** de performance
+
+### **Sprint 9+ (Futuro) - Conforme demanda**
+- 📝 **Tipos 7-9** (cenários raros)
+- 📝 **Funcionalidades avançadas**
+- 📝 **Integrações** adicionais
+
+## ⚙️ **Setup do Ambiente de Desenvolvimento**
 
 ### **Pré-requisitos**
 - **Visual Studio 2019/2022** com .NET Framework 4.8
@@ -183,7 +181,6 @@ database/scripts/05-seed-data.sql
 - 🎯 **Testes unitários:** Meta 80% cobertura
 - 🎯 **Testes integração:** Cenários críticos
 
-
 ## 🤝 **Como Contribuir**
 
 ### **Fluxo de Desenvolvimento**
@@ -225,6 +222,7 @@ arch: ajusta estrutura repository pattern
 ### **Documentação Oficial**
 - **[eSocial v1.3](https://www.gov.br/esocial/pt-br)** - Leiautes oficiais
 - **[Manual eSocial Web](https://www.gov.br/esocial/pt-br/documentacao-tecnica)** - Interface de referência
+- **[Senior Documentação](https://documentacao.senior.com.br/gestao-de-pessoas-hcm/esocial/)** - Referência técnica
 
 ### **Wiki do Projeto**
 - **[FAQ](../../wiki/FAQ)** - Perguntas frequentes
@@ -236,59 +234,18 @@ arch: ajusta estrutura repository pattern
 - **[Feature Request](../../issues/new?template=feature_request.md)** - Sugerir melhorias
 - **[Documentation](../../issues/new?template=documentation.md)** - Melhorias na documentação
 
+---
 
+## 📋 **Status do Projeto**
 
-### Frameworks, Platforms and Libraries
-![.Net](https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white)
+**📊 Progresso Geral:** 📋 Análise Completa → 🔄 Desenvolvimento Iniciando
 
+**🎯 Fase Atual:** Implementação dos Tipos 1-3 (Prioridade 1)
 
-### Databases
+**📅 Última Atualização:** Agosto 2025
 
-![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+**👥 Equipe:** Tech Lead + Desenvolvedores + Analista de Negócio
 
-![image](https://img.shields.io/badge/Git-E34F26?style=for-the-badge&logo=git&logoColor=white)
+---
 
-### Designer
-![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
-
-### Testes
-![NUnit](https://img.shields.io/badge/NUnit-16B7FB?style=for-the-badge&logo=NUnit&logoColor=white)
-
-### Outros
-
-![Figma](https://img.shields.io/badge/draw.io-%002E3B.svg?style=for-the-badge&logo=draw.io&logoColor=white)
-
-
-<!-- CONTACT -->
-
-## Contatos
-
-Marcos Araujo - [@linkedIn](https://www.linkedin.com/in/marcosaraujosouza/) - marcos.araso@hotmail.com
-
-Project Link: [Cgs.ProcessoTrabalhista](https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-
-## Agradecimentos
-
--   [XXXXXXX](https://XXXXXX/)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[contributors-shield]: https://img.shields.io/github/contributors/marcosaraujo-dev/Cgs.ProcessoTrabalhista.svg?style=for-the-badge
-[contributors-url]: https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/marcosaraujo-dev/Cgs.ProcessoTrabalhista.svg?style=for-the-badge
-[forks-url]: https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista/network/members
-[stars-shield]: https://img.shields.io/github/stars/marcosaraujo-dev/Cgs.ProcessoTrabalhista.svg?style=for-the-badge
-[stars-url]: https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista/stargazers
-[issues-shield]: https://img.shields.io/github/issues/marcosaraujo-dev/Cgs.ProcessoTrabalhista.svg?style=for-the-badge
-[issues-url]: https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista/issues
-[license-shield]: https://img.shields.io/github/license/marcosaraujo-dev/Cgs.ProcessoTrabalhista.svg?style=for-the-badge
-[license-url]: https://github.com/marcosaraujo-dev/Cgs.ProcessoTrabalhista/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/in/marcosaraujosouza/
+**🏆 Objetivo:** Sistema de referência para processos trabalhistas eSocial, com qualidade e usabilidade que superem as expectativas dos usuários acostumados ao eSocial Web oficial.
