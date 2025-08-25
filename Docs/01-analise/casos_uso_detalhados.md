@@ -1,575 +1,467 @@
-# 📋 CASOS DE USO DETALHADOS
-## Diferenças entre os 8 Tipos de Contrato - eSocial Processo Trabalhista
+# Casos de Uso Detalhados - Sistema eSocial Processos Trabalhistas
 
-> **Foco:** Cenários específicos e diferenças entre os tipos de contrato  
-> **Base:** Manual eSocial Web + Análise dos arquivos fornecidos  
-> **Versão:** 1.0 - Agosto 2025
+## Visão Geral
 
----
+Este documento apresenta os casos de uso detalhados do sistema de processos trabalhistas do eSocial, organizados por atores e funcionalidades principais.
 
-## 🎯 **VISÃO GERAL DOS CASOS DE USO**
+## Atores do Sistema
 
-### **Casos de Uso por Prioridade de Desenvolvimento:**
+### Ator Primário: Usuário Operacional
+- **Descrição**: Responsável pelo cadastro diário dos processos e tributos
+- **Responsabilidades**: 
+  - Cadastrar processos judiciais
+  - Vincular trabalhadores aos processos
+  - Registrar tributos decorrentes
+  - Gerar XMLs preliminares
 
-**🟢 FASE 1 (Desenvolvimento Imediato):**
-- **UC001:** Cadastrar Processo Tipo 1 (Vínculo sem alteração)
-- **UC002:** Cadastrar Processo Tipo 2 (Alteração admissão)  
-- **UC003:** Cadastrar Processo Tipo 3 (Inclusão desligamento)
-- **UC010:** Cadastrar Tributos S-2501
-- **UC011:** Validar e Gerar XML
+### Ator Secundário: Supervisor/Coordenador
+- **Descrição**: Responsável pela validação e aprovação dos dados
+- **Responsabilidades**:
+  - Validar dados antes do envio
+  - Aprovar transmissões para eSocial
+  - Gerenciar usuários do sistema
+  - Acompanhar status dos processos
 
-**🟡 FASE 2 (Desenvolvimento Futuro):**
-- **UC004:** Cadastrar Processo Tipo 4 (Alteração ambas datas)
-- **UC005:** Cadastrar Processo Tipo 5 (Reconhecimento vínculo)
-- **UC006:** Cadastrar Processo Tipo 6 (TSVE sem reconhecimento)
-- **UC007:** Cadastrar Processo Tipo 7 (Período pré-eSocial)
-- **UC008:** Cadastrar Processo Tipo 8 (Responsabilidade indireta)
-- **UC009:** Cadastrar Processo Tipo 9 (Unicidade contratual)
+### Ator Secundário: Auditor/Consultor
+- **Descrição**: Responsável pela análise e conferência dos dados
+- **Responsabilidades**:
+  - Analisar histórico de alterações
+  - Conferir cálculos de tributos
+  - Gerar relatórios de controle
+  - Identificar inconsistências
 
----
+### Ator Externo: eSocial
+- **Descrição**: Sistema governamental receptor dos eventos
+- **Responsabilidades**:
+  - Receber eventos XML
+  - Validar informações
+  - Retornar protocolo de recebimento
+  - Processar dados no ambiente governamental
 
-## 🟢 **UC001 - CADASTRAR PROCESSO TIPO 1**
-### *Trabalhador com vínculo formalizado, sem alteração de datas*
+## Casos de Uso Principais
 
-### **Ator Principal:** Usuário operador
-### **Objetivo:** Cadastrar processo trabalhista para trabalhador já vinculado sem alterar datas de admissão/desligamento
+### UC001 - Cadastrar Processo Judicial
 
-### **Pré-condições:**
-- ✅ Usuário autenticado no sistema base
-- ✅ Trabalhador possui cadastro no eSocial
-- ✅ Vínculo empregatício declarado e ativo
-- ✅ CPF do trabalhador disponível
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Registrar informações básicas de um processo judicial trabalhista
 
-### **Fluxo Principal:**
+#### Pré-condições:
+- Usuário autenticado no sistema
+- Possui permissão para cadastro de processos
+- Dados da sentença judicial disponíveis
 
-#### **Etapa 1: Identificação do Trabalhador**
-1. Sistema exibe tela "Novo Processo Trabalhista"
-2. Usuário informa **CPF do trabalhador** (000.000.000-00)
-3. Sistema **valida formato** do CPF
-4. Sistema **consulta base externa** de trabalhadores
-5. Sistema **localiza trabalhador** e exibe dados básicos:
-   - Nome completo
-   - Data de nascimento  
-   - Situação no eSocial
+#### Fluxo Principal:
+1. Usuário acessa funcionalidade "Cadastro de Processo Judicial"
+2. Sistema exibe formulário de cadastro
+3. Usuário informa número do processo (formato judicial)
+4. Sistema valida formato e unicidade do número
+5. Usuário informa dados do empregador (CNPJ/CPF)
+6. Sistema oferece busca automática ou cadastro manual
+7. Usuário informa dados específicos da sentença:
+   - Data da sentença
+   - UF da Vara
+   - Código do município (IBGE)
+   - Identificação da Vara
+8. Usuário informa dados do responsável indireto (se aplicável)
+9. Usuário adiciona observações relevantes
+10. Sistema valida todas as informações
+11. Usuário confirma cadastro
+12. Sistema gera ID único e salva processo
+13. Sistema exibe confirmação com ID gerado
 
-#### **Etapa 2: Seleção de Matrícula**
-6. Sistema exibe **lista de matrículas ativas** do trabalhador
-7. Usuário **seleciona matrícula** específica para o processo
-8. Sistema **carrega dados do contrato**:
-   - Categoria do trabalhador (readonly)
-   - Data de admissão original (readonly)
-   - CBO (readonly)
-   - Natureza da atividade (readonly)
-   - Regime trabalhista (readonly)
-   - Regime previdenciário (readonly)
+#### Fluxos Alternativos:
 
-#### **Etapa 3: Dados do Processo**
-9. Sistema exibe **Aba "Dados do Processo"**
-10. Usuário preenche:
-    - **Número do processo** (validação formato)
-    - **Origem** (Judicial/CCP/Ninter)
-    - **Data da sentença/acordo**
-    - **CNPJ/CPF empregador** (autopreenchido se disponível)
-11. Sistema **valida campos obrigatórios** por origem
-12. Usuário clica **"Próximo"**
+**FA001 - Processo já existente**
+- No passo 4, se número já existe:
+  - Sistema exibe mensagem de erro
+  - Oferece opção de consultar processo existente
+  - Retorna ao passo 3
 
-#### **Etapa 4: Informações da Decisão**
-13. Sistema exibe **Aba "Informações da Decisão ou Acordo"**
-14. Sistema **predefine Tipo 1** no dropdown
-15. Sistema exibe **campos readonly** com dados do vínculo:
-    - Categoria: Empregado (101) ← exemplo
-    - Matrícula: 12345 ← da seleção anterior
-    - Data Admissão Original: 01/01/2020 ← readonly
-    - CBO: 252515 ← readonly
-    - Natureza: Trabalho urbano ← readonly
-16. **Seção "Informações de Desligamento"** (OPCIONAL):
-    - Data de desligamento (opcional)
-    - Motivo desligamento (condicional)
+**FA002 - Busca empresa por CNPJ**
+- No passo 6, se usuário opta por busca:
+  - Sistema abre modal de busca
+  - Usuário informa CNPJ
+  - Sistema busca na base integrada
+  - Se encontrado, preenche dados automaticamente
+  - Se não encontrado, permite cadastro manual
 
-#### **Etapa 5: Consolidação de Valores**
-17. Sistema avança para **"Consolidação dos Valores"**
-18. Usuário preenche:
-    - **Estabelecimento pagador** (CNPJ/CPF/CAEPF)
-    - **Início do processo** (MM/YYYY)
-    - **Fim do processo** (MM/YYYY)
-    - **Repercussão** (dropdown)
-    - Checkboxes indenizações (opcional)
+**FA003 - Dados de município inválidos**  
+- No passo 7, se código IBGE inválido:
+  - Sistema exibe erro de validação
+  - Oferece busca por nome do município
+  - Permite seleção da lista
+  - Retorna ao passo 7
 
-#### **Etapa 6: Discriminação Mensal**
-19. Sistema **gera automaticamente** competências baseadas no período
-20. Sistema exibe **grid mensal** com:
-    - Coluna 1: Competência (YYYY-MM)
-    - Coluna 2: Base CP (R$)
-    - Coluna 3: Base FGTS (R$)
-    - Coluna 4: Observações
-21. Usuário **preenche valores** por competência
-22. Sistema **totaliza automaticamente**
-
-#### **Etapa 7: Finalização**
-23. Usuário clica **"Finalizar"**
-24. Sistema **executa validações finais**
-25. Sistema **salva processo** com status "Cadastrado"
-26. Sistema **exibe confirmação** com número sequencial
-
-### **Fluxos Alternativos:**
-
-#### **FA001 - CPF não encontrado**
-- **No passo 4:** Sistema não localiza CPF na base externa
-- Sistema exibe popup: **"CPF não encontrado. Deseja cadastrar manualmente?"**
-- Se usuário confirma: abre tela cadastro manual (nome, data nascimento)
-- Se usuário cancela: retorna ao campo CPF
-
-#### **FA002 - Trabalhador sem vínculo ativo**  
-- **No passo 6:** Sistema não encontra matrículas ativas
-- Sistema exibe: **"Trabalhador não possui vínculos ativos. Verificar tipo de contrato."**
-- Sistema sugere **Tipo 5 ou 6** como alternativa
-- Usuário deve cancelar e reiniciar com tipo correto
-
-#### **FA003 - Data de desligamento informada**
-- **No passo 16:** Usuário preenche data de desligamento
-- Sistema **torna obrigatório** o motivo de desligamento
-- Sistema **valida** data posterior à admissão
-- Sistema **ajusta automaticamente** fim do processo para data desligamento
-
-### **Pós-condições:**
-- ✅ Processo cadastrado no banco com todos os dados
-- ✅ Status "Cadastrado" atribuído
-- ✅ Logs de auditoria registrados
-- ✅ Processo disponível para edição/transmissão
-
-### **Regras de Negócio Específicas:**
-- **RN001:** Todos os dados contratuais são readonly (vêm do eSocial)
-- **RN002:** Data desligamento é opcional, mas se informada, motivo é obrigatório
-- **RN003:** Período do processo deve sobrepor com período do contrato
-- **RN004:** Matrícula deve estar ativa na data da sentença
+#### Pós-condições:
+- Processo cadastrado com status "Ativo"
+- ID único gerado e disponível para vinculação
+- Log de auditoria registrado
+- Processo disponível para vinculação de trabalhadores
 
 ---
 
-## 🟢 **UC002 - CADASTRAR PROCESSO TIPO 2**
-### *Trabalhador com vínculo formalizado, com alteração na data de admissão*
+### UC002 - Vincular Trabalhador ao Processo
 
-### **Diferenças em relação ao UC001:**
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Associar trabalhador ao processo e definir informações contratuais
 
-#### **Etapa 4 - Informações da Decisão (MODIFICADA):**
-14. Sistema **predefine Tipo 2** no dropdown
-15. Sistema exibe campos **EDITÁVEIS** específicos:
-    - **Data de Admissão Original:** 01/01/2020 (readonly - referência)
-    - **Data de Admissão:** ________ (**OBRIGATÓRIO** - nova data)
-    - **CBO:** Campo **editável** (pode ter mudado)
-    - **Natureza da Atividade:** Campo **editável**
+#### Pré-condições:
+- Processo judicial cadastrado e ativo
+- Dados do trabalhador disponíveis (CPF mínimo)
+- Informações do contrato de trabalho conhecidas
 
-#### **Validações Específicas:**
-- **Nova data admissão** deve ser **ANTERIOR** à data original
-- **CBO** deve ser válido na tabela oficial
-- **Mudança categoria** obrigatória se categoria diferir
+#### Fluxo Principal:
+1. Usuário acessa "Cadastro de Processo Trabalhista"
+2. Sistema exibe lista de processos ativos
+3. Usuário seleciona processo judicial
+4. Sistema carrega dados do processo selecionado
+5. Sistema exibe opção "Adicionar Trabalhador"
+6. Usuário informa CPF do trabalhador
+7. Sistema valida CPF e busca na base integrada
+8. Sistema exibe dados encontrados ou permite cadastro manual
+9. Usuário seleciona tipo de contrato aplicável (1 a 9)
+10. Sistema exibe campos específicos do tipo escolhido
+11. Usuário preenche informações contratuais obrigatórias:
+    - Matrícula
+    - Categoria profissional
+    - Data de admissão original
+    - CBO
+    - Regime trabalhista
+12. Usuário preenche informações específicas conforme tipo:
+    - Alterações de datas (tipos 2, 3, 4)
+    - Dados de reconhecimento (tipo 5)
+    - Informações TSVE (tipo 6)
+    - Dados período pré-eSocial (tipo 7)
+    - Sucessão/unicidade (tipos 8, 9)
+13. Sistema valida consistência dos dados
+14. Usuário confirma vinculação
+15. Sistema salva trabalhador vinculado ao processo
+16. Sistema exibe opção de adicionar outro trabalhador
 
-#### **Seção Adicional - Mudança de Categoria:**
-16. Sistema exibe seção **"Mudança de Categoria/Atividade"**:
-    - **Data da mudança:** (preenchida automaticamente = nova data admissão)
-    - **Nova categoria:** (se aplicável)
-    - **Nova natureza:** (se aplicável)
-    - Botão **"+ Incluir mudança"** (para múltiplas mudanças)
+#### Fluxos Alternativos:
 
-#### **Impactos Automáticos:**
-- Sistema **marca para retificação** o S-2200 original
-- **Período do processo** inicia na nova data de admissão
-- **Base de cálculo** deve considerar período ampliado
+**FA001 - CPF já vinculado ao processo**
+- No passo 7, se CPF já existe no processo:
+  - Sistema exibe erro "Trabalhador já vinculado"
+  - Oferece opção de editar dados existentes
+  - Retorna ao passo 6
 
-### **Regras de Negócio Específicas:**
-- **RN005:** Nova data admissão obrigatória e anterior à original
-- **RN006:** Sistema deve retificar S-2200 automaticamente após transmissão
-- **RN007:** FGTS deve ser recalculado desde nova data
+**FA002 - Trabalhador não encontrado na base**
+- No passo 8, se busca não retorna resultado:
+  - Sistema solicita cadastro manual
+  - Usuário informa nome completo
+  - Usuário informa data de nascimento
+  - Sistema valida dados básicos
+  - Prossegue para passo 9
 
----
+**FA003 - Validação de tipo de contrato**
+- No passo 13, se dados inconsistentes com tipo:
+  - Sistema exibe erros específicos
+  - Destaca campos problemáticos
+  - Oferece sugestões de correção
+  - Retorna ao passo apropriado
 
-## 🟢 **UC003 - CADASTRAR PROCESSO TIPO 3**  
-### *Trabalhador com vínculo formalizado, com inclusão/alteração de desligamento*
-
-### **Diferenças em relação ao UC001:**
-
-#### **Etapa 4 - Informações da Decisão (MODIFICADA):**
-14. Sistema **predefine Tipo 3** no dropdown
-15. Todos os dados contratuais permanecem **readonly**
-
-#### **Seção "Informações de Desligamento" (OBRIGATÓRIA):**
-16. Sistema exibe seção **obrigatória**:
-    - **Data de Desligamento:** ________ (**OBRIGATÓRIO**)
-    - **Código Motivo Desligamento:** ________ (**OBRIGATÓRIO**)  
-    - **Data Projetada Término API:** ________ (condicional por motivo)
-
-#### **Validações Específicas:**
-- **Data desligamento** obrigatória e posterior à admissão
-- **Motivo** deve ser código válido da tabela oficial
-- **API** obrigatório para motivos específicos (ex: demissão sem justa causa)
-
-#### **Cenários Específicos:**
-- **C1:** Vínculo ativo → Primeira vez incluindo desligamento
-- **C2:** Vínculo já desligado → Alterando data de desligamento
-- **C3:** Reintegração → Cancelando desligamento anterior
-
-### **Impactos Automáticos:**
-- Sistema **ajusta fim do processo** para data de desligamento
-- Se alteração: sistema **retifica S-2299** existente
-- Se inclusão: sistema **gera novo S-2299**
-
-### **Regras de Negócio Específicas:**
-- **RN008:** Data e motivo de desligamento sempre obrigatórios
-- **RN009:** Fim do processo não pode ser posterior ao desligamento
-- **RN010:** Sistema gera/retifica S-2299 automaticamente
+#### Pós-condições:
+- Trabalhador vinculado ao processo
+- Dados contratuais registrados
+- Processo pronto para cadastro de tributos
+- Log de auditoria atualizado
 
 ---
 
-## 🟡 **UC004 - CADASTRAR PROCESSO TIPO 4**
-### *Trabalhador com alteração nas datas de admissão E desligamento*
+### UC003 - Cadastrar Tributos Decorrentes
 
-### **Complexidade:** ALTA - Combina UC002 + UC003
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Registrar tributos e contribuições decorrentes do processo trabalhista
 
-### **Etapa 4 - Informações da Decisão (COMPLEXA):**
-- **Combina** todas as funcionalidades dos Tipos 2 e 3
-- **Data admissão** editável (como Tipo 2)
-- **Seção desligamento** obrigatória (como Tipo 3)
-- **Seção mudança categoria** obrigatória
+#### Pré-condições:
+- Processo com trabalhador(es) vinculado(s)
+- Informações de remuneração e bases disponíveis
+- Período de apuração definido
 
-### **Validações Complexas:**
-- **Sequência temporal:** Nova admissão < Desligamento < Admissão original
-- **Múltiplas retificações:** S-2200 + S-2299
-- **Período consistente:** Todo período reconhecido deve ser válido
+#### Fluxo Principal:
+1. Usuário acessa "Cadastro de Tributos"
+2. Sistema exibe processos com trabalhadores vinculados
+3. Usuário seleciona processo e trabalhador específico
+4. Sistema carrega dados contratuais do trabalhador
+5. Usuário informa período de apuração (AAAA-MM)
+6. Sistema valida se período está dentro do contrato
+7. Usuário informa valores de remuneração:
+   - Remuneração fixa
+   - Remuneração variável
+   - 13º salário
+   - Férias e rescisórias
+8. Sistema calcula bases de cálculo automaticamente
+9. Usuário confirma ou ajusta bases calculadas:
+   - Base INSS empregado/empregador
+   - Base FGTS (8% + multas)
+   - Base IRRF
+   - Base contribuições terceiros
+10. Sistema aplica alíquotas vigentes no período
+11. Sistema calcula valores de tributos
+12. Usuário revisa cálculos apresentados
+13. Sistema permite ajustes manuais se necessário
+14. Usuário informa códigos de receita específicos
+15. Usuário adiciona observações sobre cálculos
+16. Sistema valida consistência geral
+17. Usuário confirma cadastro dos tributos
+18. Sistema salva informações com versionamento
 
-### **Impactos no Sistema:**
-- **Múltiplos XMLs:** Pode gerar até 3 eventos (S-2200, S-2299, S-2500)
-- **Cálculos complexos:** Bases para período completo reconhecido
-- **Validações cruzadas:** Entre múltiplas datas
+#### Fluxos Alternativos:
 
----
+**FA001 - Período já possui tributos**
+- No passo 6, se período já cadastrado:
+  - Sistema exibe alerta
+  - Oferece opção de editar existente
+  - Permite criar nova versão
+  - Usuário decide como proceder
 
-## 🟡 **UC005 - CADASTRAR PROCESSO TIPO 5**
-### *Empregado com reconhecimento de vínculo*
+**FA002 - Valores excedem limites legais**
+- No passo 11, se cálculo excede tetos:
+  - Sistema aplica limitação automaticamente
+  - Exibe alerta sobre aplicação do teto
+  - Mostra valores antes/depois da limitação
+  - Prossegue normalmente
 
-### **Diferenças Fundamentais:**
+**FA003 - Múltiplos períodos**
+- Após passo 18, usuário pode:
+  - Adicionar outro período
+  - Copiar dados do período atual
+  - Sistema sugere ajustes por período
+  - Processo se repete para novo período
 
-#### **Etapa 1 - Identificação (MODIFICADA):**
-- Sistema **pode não encontrar** trabalhador na base eSocial
-- **Cadastro manual** pode ser necessário
-- **Não há vínculo anterior** para referenciar
-
-#### **Etapa 2 - Dados do Trabalhador:**
-- **Nome completo** (obrigatório, manual)
-- **Data nascimento** (obrigatório, manual)
-- **Dados pessoais** básicos (endereço, etc.)
-
-#### **Etapa 4 - Informações da Decisão (COMPLETAMENTE DIFERENTE):**
-14. Sistema **predefine Tipo 5**
-15. **TODOS os campos são editáveis** (não há dados de referência):
-    - **Categoria trabalhador:** Dropdown (apenas [1XX])
-    - **Matrícula:** Campo livre (**deve começar com 'eSocial-JUD-'**)
-    - **Data de Admissão:** Data reconhecida pelo processo
-    - **CBO:** Seleção manual obrigatória
-    - **Salário base:** Valor obrigatório
-    - **Natureza atividade:** Manual (com auto-preenchimento por categoria)
-    - **Tipo contrato:** Seleção obrigatória
-    - **Regime trabalhista:** Seleção obrigatória
-    - **Regime previdenciário:** Seleção obrigatória
-
-#### **Seção Desligamento (OBRIGATÓRIA):**
-- Como não há vínculo ativo, **desligamento é sempre obrigatório**
-- **Data desligamento:** Obrigatório
-- **Motivo:** Obrigatório
-
-### **Fluxo de Geração Automática:**
-23. Após finalizar, sistema **gera automaticamente**:
-    - **S-2200:** Admissão retroativa
-    - **S-2299:** Desligamento 
-    - **S-2500:** Processo trabalhista principal
-
-### **Regras Específicas:**
-- **RN011:** Matrícula deve começar com 'eSocial-JUD-'
-- **RN012:** Categoria deve ser [1XX] (empregado)
-- **RN013:** Sistema gera 3 eventos coordenados
-- **RN014:** Natureza auto-preenchida: Cat 104→Urbano, Cat 102→Rural
-
----
-
-## 🟡 **UC006 - CADASTRAR PROCESSO TIPO 6**
-### *TSVE - Trabalhador sem vínculo, sem reconhecimento*
-
-### **Características Únicas:**
-- **NÃO reconhece vínculo empregatício**
-- **Apenas obrigações tributárias**
-- **Pode ter ou não cadastro S-2300** anterior
-
-### **Subcenários:**
-- **UC006A:** TSVE sem cadastro no eSocial
-- **UC006B:** TSVE com cadastro ativo
-- **UC006C:** TSVE com cadastro encerrado
-
-#### **Etapa 4 - Informações da Decisão (ESPECÍFICA TSVE):**
-15. Campos específicos para TSVE:
-    - **Categoria:** Restrita a categorias TSVE válidas
-    - **Data início serviços:** Campo obrigatório
-    - **Data término serviços:** Campo obrigatório  
-    - **Valor dos serviços:** Campo obrigatório
-    - **Matrícula TSVE:** Opcional (se já cadastrado)
-
-### **Impactos:**
-- **NÃO gera S-2200** (sem reconhecimento vínculo)
-- **Pode referenciar S-2300** existente
-- **Foco nos tributos** sobre valores pagos
+#### Pós-condições:
+- Tributos cadastrados e calculados
+- Bases validadas e consistentes
+- Processo pronto para geração XML
+- Histórico de cálculos preservado
 
 ---
 
-## 🟡 **UC007 - CADASTRAR PROCESSO TIPO 7**
-### *Trabalhador com vínculo em período anterior ao eSocial*
+### UC004 - Gerar XML para Envio
 
-### **Complexidade:** MUITO ALTA
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Gerar arquivos XML dos eventos eSocial para envio
 
-### **Cenário:**
-- Vínculo existiu **antes da obrigatoriedade** eSocial
-- Empresa **não declarou na época** 
-- Processo se refere ao **período anterior**
+#### Pré-condições:
+- Processo completo (judicial + trabalhador + tributos)
+- Dados validados e consistentes
+- Sistema configurado com certificados
 
-### **Campos Específicos:**
-- **Período de referência:** Anterior à obrigatoriedade
-- **Justificativa:** Motivo da não declaração na época
-- **Documentação:** Referências comprobatórias
-- **Legislação aplicável:** Vigente no período
+#### Fluxo Principal:
+1. Usuário acessa "Geração de XMLs"
+2. Sistema exibe processos prontos para envio
+3. Usuário seleciona processo(s) desejado(s)
+4. Sistema exibe resumo dos dados a serem enviados
+5. Usuário escolhe tipos de evento a gerar:
+   - S-2500 (Processo Trabalhista)
+   - S-2501 (Tributos Decorrentes)
+6. Sistema executa validações finais pré-envio:
+   - Regras de negócio eSocial
+   - Consistência entre eventos
+   - Campos obrigatórios
+   - Formatos e tamanhos
+7. Sistema exibe resultado das validações
+8. Se válido, usuário confirma geração
+9. Sistema gera XMLs conforme leiaute eSocial
+10. Sistema aplica assinatura digital
+11. Sistema salva XMLs em diretório configurado
+12. Sistema atualiza status do processo
+13. Sistema exibe confirmação com localização dos arquivos
 
-### **Validações Temporais:**
-- Datas devem ser **anteriores** à obrigatoriedade eSocial
-- Cálculos conforme **legislação da época**
-- Documentação **comprobatória** obrigatória
+#### Fluxos Alternativos:
 
----
+**FA001 - Validações com erro**
+- No passo 7, se validação falha:
+  - Sistema exibe lista detalhada de erros
+  - Oferece navegação direta aos campos problemáticos
+  - Usuário corrige dados
+  - Retorna ao passo 6 para nova validação
 
-## 🟡 **UC008 - CADASTRAR PROCESSO TIPO 8**
-### *Responsabilidade indireta*
+**FA002 - Geração de XML único**
+- No passo 5, se selecionado apenas um tipo:
+  - Sistema gera apenas evento selecionado
+  - Aplica validações específicas do evento
+  - Prossegue normalmente
 
-### **Complexidade:** MUITO ALTA
+**FA003 - Problema na assinatura**
+- No passo 10, se certificado inválido:
+  - Sistema exibe erro de certificado
+  - Oferece reconfiguração
+  - Permite geração sem assinatura (teste)
+  - Usuário decide como proceder
 
-### **Cenário:**
-- Trabalhador prestou serviço para **terceiro**
-- Empregador tem **responsabilidade indireta** (solidária/subsidiária)
-- **Múltiplos empregadores** envolvidos
-
-### **Campos Específicos:**
-- **Empregador direto:** Quem contratou originalmente
-- **Empregador responsável:** Quem pagará (solidário/subsidiário)
-- **Tipo responsabilidade:** Dropdown (solidária/subsidiária/sucessão)
-- **Percentual:** Se responsabilidade parcial
-- **Período específico:** Datas da responsabilidade
-
-### **Relacionamentos Complexos:**
-- **Múltiplas empresas** no mesmo processo
-- **Cálculos proporcionais** de valores
-- **Validações específicas** de responsabilidade
-
----
-
-## 🟡 **UC009 - CADASTRAR PROCESSO TIPO 9**  
-### *Trabalhador com contratos unificados (unicidade contratual)*
-
-### **Complexidade:** MUITO ALTA
-
-### **Cenário:**
-- **Múltiplos contratos sucessivos** no eSocial
-- Processo **reconhece continuidade** (contrato único)
-- **Unificação de vínculos** em período único
-
-#### **Etapa Específica - Seleção de Contratos:**
-- Sistema lista **todos os contratos** do trabalhador
-- Usuário **seleciona quais unificar**
-- Sistema **valida sequência temporal**
-- Sistema **calcula período unificado**
-
-#### **Campos Específicos:**
-- **Lista contratos:** Multiple selection
-- **Período unificado:** Data início (primeiro) + Data fim (último)  
-- **Categoria final:** Categoria resultante da unificação
-- **Justificativa:** Motivo legal da unificação
-
-#### **Validações Complexas:**
-- Contratos devem ser **sequenciais ou sobrepostos**
-- **Sem lacunas temporais** significativas
-- **Mesmo empregador** em todos contratos
-- **Categoria consistente** com último período
-
-#### **Impactos no Sistema:**
-- **Múltiplos S-2299:** Cancela desligamentos intermediários
-- **S-2200 retificado:** Unifica todos os períodos
-- **Recálculos:** FGTS e contribuições período total
-- **Coordenação:** Múltiplas retificações simultâneas
+#### Pós-condições:
+- XMLs gerados e validados
+- Arquivos salvos em local adequado
+- Status atualizado para "Pronto para Envio"
+- Log de geração registrado
 
 ---
 
-## 📋 **UC010 - CADASTRAR TRIBUTOS S-2501**
-### *Informações de tributos decorrentes de processo*
+### UC005 - Validar Dados Completos
 
-### **Pré-condições:**
-- ✅ Processo S-2500 **transmitido e aceito**
-- ✅ Trabalhador vinculado ao processo
-- ✅ Período de apuração válido
+**Ator Principal**: Supervisor/Coordenador  
+**Objetivo**: Executar validação final antes do envio aos órgãos
 
-### **Fluxo Principal:**
+#### Pré-condições:
+- Processo com XMLs gerados
+- Usuário com perfil de supervisor
+- Dados ainda não transmitidos
 
-#### **Etapa 1: Seleção do Processo Base**
-1. Sistema lista **processos S-2500 transmitidos**
-2. Usuário **seleciona processo** específico
-3. Sistema lista **trabalhadores** do processo
-4. Usuário **seleciona trabalhador** para tributos
+#### Fluxo Principal:
+1. Supervisor acessa "Validação Final"
+2. Sistema exibe processos aguardando validação
+3. Supervisor seleciona processo para análise
+4. Sistema exibe painel completo com:
+   - Dados do processo judicial
+   - Trabalhadores vinculados
+   - Tributos calculados
+   - XMLs gerados
+5. Supervisor executa validação automática completa
+6. Sistema executa bateria de testes:
+   - Regras específicas por tipo de contrato
+   - Consistência entre dados e cálculos
+   - Validação cruzada entre eventos
+   - Conformidade com leiautes eSocial
+7. Sistema apresenta relatório de validação
+8. Supervisor analisa manualmente dados críticos
+9. Supervisor pode solicitar correções se necessário
+10. Supervisor aprova ou rejeita para envio
+11. Sistema atualiza status conforme decisão
+12. Se aprovado, libera para transmissão
 
-#### **Etapa 2: Períodos de Apuração**  
-5. Sistema exibe **período do processo** (referência)
-6. Usuário informa **período de apuração** (YYYY-MM)
-7. Sistema **valida período** dentro do range do processo
-8. Sistema permite **múltiplos períodos**
+#### Fluxos Alternativos:
 
-#### **Etapa 3: Valores dos Tributos**
-9. Para cada período, usuário informa:
-   - **Base cálculo previdenciária** (R$)
-   - **Base cálculo FGTS** (R$) 
-   - **Valor IRRF** (R$)
-   - **Contribuições sociais** (R$)
-   - **Contribuições terceiros** (R$)
+**FA001 - Validação com pendências**
+- No passo 7, se existem pendências:
+  - Sistema destaca itens problemáticos
+  - Oferece relatório detalhado
+  - Supervisor pode aprovar com ressalvas
+  - Ou pode rejeitar para correção
 
-#### **Etapa 4: Validação e Confirmação**
-10. Sistema **valida valores** (não negativos, formato)
-11. Sistema **calcula totais** por tipo
-12. Sistema **exibe resumo** para confirmação
-13. Sistema **salva S-2501** com status "Cadastrado"
+**FA002 - Solicitação de correção**
+- No passo 10, se supervisor rejeita:
+  - Sistema solicita justificativa
+  - Status volta para "Em Correção"
+  - Notifica usuário operacional
+  - Processo retorna para edição
 
-### **Regras Específicas:**
-- **RN015:** Só permite criar S-2501 após S-2500 aceito
-- **RN016:** Período deve estar dentro do range do processo
-- **RN017:** Valores devem ser não negativos
-- **RN018:** Múltiplos S-2501 para mesmo processo/trabalhador permitidos
-
----
-
-## 📋 **UC011 - VALIDAR E GERAR XML**
-### *Validação final e geração dos XMLs dos eventos*
-
-### **Pré-condições:**
-- ✅ Processo cadastrado completo
-- ✅ Todos os dados obrigatórios preenchidos
-- ✅ Status "Cadastrado" ou "Validado"
-
-### **Fluxo Principal:**
-
-#### **Etapa 1: Validação Pré-Transmissão**
-1. Sistema executa **engine de validação completa**
-2. Sistema verifica **regras por tipo de contrato**
-3. Sistema valida **consistência cruzada** de campos
-4. Sistema gera **relatório de validação**:
-   - ✅ **Itens válidos** (verde)
-   - ❌ **Erros bloqueantes** (vermelho)
-   - ⚠️ **Alertas** (amarelo)
-
-#### **Etapa 2: Correção de Inconsistências**
-5. Se houver erros: sistema **bloqueia prosseguimento**
-6. Sistema exibe **detalhes dos erros** com sugestões
-7. Usuário **corrige inconsistências**
-8. Sistema **re-valida automaticamente**
-
-#### **Etapa 3: Preview do XML**
-9. Sistema **gera XML preview** conforme tipo
-10. Sistema aplica **Factory pattern** específico
-11. Sistema **valida contra XSD** oficial
-12. Sistema exibe **XML formatado** para revisão
-
-#### **Etapa 4: Confirmação e Geração**
-13. Usuário confirma **geração definitiva**
-14. Sistema **gera XML final** com numeração sequencial
-15. Sistema **salva XML** no diretório configurado
-16. Sistema **altera status** para "Pronto para Transmissão"
-17. Sistema **registra log** de geração
-
-### **Validações por Tipo:**
-- **Tipo 1:** Validações básicas + consistência vínculo
-- **Tipo 2:** + Validação data admissão anterior
-- **Tipo 3:** + Validação desligamento obrigatório
-- **Tipos 4-9:** Validações específicas complexas
+#### Pós-condições:
+- Processo validado e aprovado
+- Status atualizado para "Aprovado"
+- Pronto para transmissão oficial
+- Histórico de validação preservado
 
 ---
 
-## 📊 **MATRIZ DE DIFERENÇAS ENTRE TIPOS**
+### UC006 - Consultar Status de Processos
 
-| Aspecto | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 |
-|---------|----|----|----|----|----|----|----|----|----| 
-| **Busca Trabalhador** | eSocial | eSocial | eSocial | eSocial | Manual | Manual | Manual | Complexa | eSocial |
-| **Dados Contratuais** | Readonly | Editáveis | Readonly | Editáveis | Manuais | Manuais | Manuais | Múltiplos | Múltiplos |
-| **Data Admissão** | Readonly | **Editável** | Readonly | **Editável** | **Manual** | Manual | Manual | Complexa | **Unificada** |
-| **Desligamento** | Opcional | Opcional | **Obrigatório** | **Obrigatório** | **Obrigatório** | **Obrigatório** | **Obrigatório** | Complexo | Complexo |
-| **Eventos Gerados** | S-2500 | S-2500 + Ret | S-2500 + S-2299 | Múltiplos | S-2200+2299+2500 | S-2500 | S-2200+2299+2500 | Múltiplos | Múltiplos |
-| **Complexidade UI** | Simples | Média | Média | Alta | Alta | Alta | Muito Alta | Muito Alta | Muito Alta |
-| **Validações** | Básicas | Temporais | Desligamento | Múltiplas | Reconhecimento | TSVE | Históricas | Responsabilidade | Unificação |
+**Ator Principal**: Qualquer usuário autenticado  
+**Objetivo**: Acompanhar situação atual dos processos no sistema
 
----
+#### Pré-condições:
+- Usuário autenticado
+- Processos cadastrados no sistema
 
-## ⚙️ **REGRAS DE NEGÓCIO CONSOLIDADAS**
+#### Fluxo Principal:
+1. Usuário acessa "Consulta de Processos"
+2. Sistema exibe filtros disponíveis:
+   - Status do processo
+   - Período de cadastro
+   - Número do processo
+   - CNPJ do empregador
+   - CPF do trabalhador
+3. Usuário aplica filtros desejados
+4. Sistema apresenta lista de processos
+5. Para cada processo exibe:
+   - Número e data
+   - Empregador
+   - Status atual
+   - Quantidade de trabalhadores
+   - Data última atualização
+6. Usuário pode selecionar processo para detalhes
+7. Sistema exibe informações completas:
+   - Timeline de alterações
+   - Dados cadastrais
+   - Status de validações
+   - XMLs gerados
+   - Histórico de transmissões
 
-### **Regras Gerais (Todos os Tipos):**
-- **RN001:** CPF deve ser válido (algoritmo + formato)
-- **RN002:** Período processo deve ser consistente (início ≤ fim)
-- **RN003:** Valores monetários não negativos
-- **RN004:** Datas devem seguir sequência lógica
-- **RN005:** Categoria trabalhador deve ser válida na tabela oficial
+#### Fluxos Alternativos:
 
-### **Regras por Tipo:**
-- **RN010-RN019:** Tipo 1 (readonly, desligamento opcional)
-- **RN020-RN029:** Tipo 2 (data admissão anterior, retificação)
-- **RN030-RN039:** Tipo 3 (desligamento obrigatório)
-- **RN040-RN049:** Tipo 4 (múltiplas validações temporais)
-- **RN050-RN059:** Tipo 5 (matrícula eSocial-JUD-, categoria [1XX])
-- **RN060-RN069:** Tipo 6 (TSVE, sem reconhecimento vínculo)
-- **RN070-RN079:** Tipo 7 (período pré-eSocial, documentação)
-- **RN080-RN089:** Tipo 8 (responsabilidade indireta, múltiplos empregadores)
-- **RN090-RN099:** Tipo 9 (unicidade, contratos sequenciais)
+**FA001 - Busca sem resultados**
+- No passo 4, se filtros não retornam dados:
+  - Sistema exibe mensagem apropriada
+  - Oferece limpar filtros
+  - Sugere ampliação dos critérios
 
----
+**FA002 - Exportação de dados**
+- No passo 5, usuário pode:
+  - Exportar lista para Excel
+  - Gerar relatório PDF
+  - Sistema processa solicitação
+  - Oferece download do arquivo
 
-## 🎯 **PRIORIZAÇÃO DE IMPLEMENTAÇÃO DOS CASOS DE USO**
+#### Pós-condições:
+- Usuário informado sobre status
+- Decisões podem ser tomadas baseadas nos dados
+- Histórico consultado conforme necessidade
 
-### **Sprint 1 (4 semanas):** 
-- **UC001:** Tipo 1 completo (cenário mais comum)
-- **UC010:** S-2501 básico
-- **UC011:** Validação e XML básico
+## Casos de Uso da Fase 2
 
-### **Sprint 2 (3 semanas):**
-- **UC002:** Tipo 2 (alteração admissão)
-- **UC003:** Tipo 3 (inclusão desligamento)
+### UC007 - Solicitar Consolidação (S-2555)
 
-### **Sprint 3 (3 semanas):**
-- **UC004:** Tipo 4 (combinação T2+T3)
-- Refinamentos e otimizações
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Gerar evento de consolidação para múltiplos S-2501 do mesmo processo
 
-### **Sprints Futuros:**
-- **UC005-UC009:** Tipos complexos conforme demanda real
-- Funcionalidades avançadas (S-2555, S-3500)
+#### Pré-condições:
+- Múltiplos S-2501 enviados para mesmo processo/período
+- Necessidade de totalização identificada
 
----
+#### Fluxo Principal:
+1. Usuário identifica necessidade de consolidação
+2. Sistema lista S-2501 elegíveis para consolidação
+3. Usuário seleciona eventos a consolidar
+4. Sistema calcula totais consolidados
+5. Sistema gera XML S-2555
+6. Evento é transmitido ao eSocial
 
-## ✅ **CRITÉRIOS DE ACEITE POR UC**
+### UC008 - Solicitar Exclusão de Eventos (S-3500)
 
-### **Para UC001-UC003 (Críticos):**
-- ✅ Interface idêntica aos padrões eSocial Web
-- ✅ Validações específicas funcionando 100%
-- ✅ XML gerado válido contra XSD oficial
-- ✅ Fluxos alternativos implementados
-- ✅ Logs de auditoria completos
+**Ator Principal**: Usuário Operacional  
+**Objetivo**: Cancelar eventos S-2500 ou S-2501 enviados incorretamente
 
-### **Para UC004-UC006 (Importantes):**
-- ✅ Funcionalidade conforme especificação
-- ✅ Integração com tipos básicos
-- ✅ Testes automatizados completos
-- ✅ Performance adequada (< 5s por operação)
+#### Pré-condições:
+- Evento anteriormente enviado e processado
+- Necessidade de exclusão identificada
 
-### **Para UC007-UC009 (Futuros):**
-- ✅ Análise detalhada caso a caso
-- ✅ ROI positivo comprovado
-- ✅ Demanda real identificada
+#### Fluxo Principal:
+1. Usuário identifica evento a excluir
+2. Sistema valida se exclusão é possível
+3. Usuário confirma exclusão com justificativa
+4. Sistema gera XML S-3500
+5. Status do evento original é atualizado
 
----
+## Considerações Gerais
 
-**📋 Documento:** Casos de Uso Detalhados v1.0  
-**🎯 Foco:** Diferenças específicas entre os 8 tipos de contrato  
-**📅 Data:** Agosto 2025  
-**✅ Status:** Especificação completa para desenvolvimento
+### Tratamento de Erros
+- Todos os casos de uso devem tratar adequadamente situações de erro
+- Mensagens devem ser claras e orientar correções
+- Sistema deve manter consistência mesmo com falhas
+
+### Auditoria e Rastreabilidade
+- Todas as operações são registradas para auditoria
+- Usuários e timestamps são preservados
+- Histórico de alterações é mantido indefinidamente
+
+### Performance e Usabilidade
+- Interface responsiva e intuitiva
+- Validações em tempo real quando possível
+- Feedback visual apropriado para operações longas
+- Funcionalidades de busca e filtro eficientes
+
+### Integração e Compatibilidade
+- Dados integrados com sistemas externos quando disponível
+- XMLs compatíveis com versão vigente do eSocial
+- Configurações flexíveis para diferentes ambientes
