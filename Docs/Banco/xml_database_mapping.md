@@ -247,11 +247,11 @@
 | Campo XML | Tabela | Campo BD | Status | Observação |
 |-----------|--------|----------|--------|------------|
 | **Id** | tributos_processo | uuid | ✅ | Identificador único evento |
-| **ideEvento/indRetif** | controle_envio_xml | - | ⚠️ | Controle retificação |
+| **ideEvento/indRetif** | controle_envio_xml | - | ⚠️ | Controle retificação (não utilizado parea solução) |
 | **ideEvento/nrRecibo** | controle_envio_xml | numero_recibo | ✅ | Recibo eSocial |
-| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio |
+| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
 
 ### 2.2 Empregador (ideEmpregador)
 
@@ -422,18 +422,18 @@
 | Campo XML | Tabela | Campo BD | Status | Observação |
 |-----------|--------|----------|--------|------------|
 | **Id** | consolidacoes_tributos | uuid | ✅ | Identificador único evento |
-| **ideEvento/indRetif** | controle_envio_xml | - | ⚠️ | Controle retificação |
+| **ideEvento/indRetif** | controle_envio_xml | - | ⚠️ | Controle retificação  (não utilizado parea solução)|
 | **ideEvento/nrRecibo** | controle_envio_xml | numero_recibo | ✅ | Recibo eSocial |
-| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio |
+| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
 
 ### 3.2 Empregador (ideEmpregador)
 
 | Campo XML | Tabela | Campo BD | Status | Observação |
 |-----------|--------|----------|--------|------------|
-| **ideEmpregador/tpInsc** | - | - | ❌ | Reutilizar dados S-2501 |
-| **ideEmpregador/nrInsc** | - | - | ❌ | Reutilizar dados S-2501 |
+| **ideEmpregador/tpInsc** | - | - | ⚠️ | Reutilizar dados S-2501 |
+| **ideEmpregador/nrInsc** | - | - | ⚠️ | Reutilizar dados S-2501 |
 
 ### 3.3 Processo (ideProc)
 
@@ -452,16 +452,16 @@
 |-----------|--------|----------|--------|------------|
 | **Id** | exclusoes_eventos | uuid | ✅ | Identificador único evento |
 | **ideEvento/indRetif** | controle_envio_xml | - | ⚠️ | Controle retificação |
-| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio |
-| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio |
+| **ideEvento/tpAmb** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/procEmi** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
+| **ideEvento/verProc** | - | - | ℹ️ | Controlado pelo sistema de envio  (não utilizado parea solução)|
 
 ### 4.2 Empregador (ideEmpregador)
 
 | Campo XML | Tabela | Campo BD | Status | Observação |
 |-----------|--------|----------|--------|------------|
-| **ideEmpregador/tpInsc** | - | - | ❌ | Reutilizar dados evento original |
-| **ideEmpregador/nrInsc** | - | - | ❌ | Reutilizar dados evento original |
+| **ideEmpregador/tpInsc** | - | - | ⚠️ | Reutilizar dados evento original |
+| **ideEmpregador/nrInsc** | - | - | ⚠️ | Reutilizar dados evento original |
 
 ### 4.3 Exclusão (infoExclusao)
 
