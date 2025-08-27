@@ -23,7 +23,7 @@ Este documento apresenta a matriz de rastreabilidade completa dos requisitos fun
 | **Tipo 06 - TSVE sem Reconhecimento** | ✅ Completo | 5 RF | 25 CA |
 | **Tipo 07 - Período Pré-eSocial** | ✅ Completo | 5 RF | 28 CA |
 | **Tipo 08 - Responsabilidade Indireta** | ✅ Completo | 5 RF | 29 CA |
-| **Tipo 09 - Unicidade Contratual** | ✅ Completo | 5 RF | 29 CA |
+| **Tipo 09 - Unicidade Contratual** | ✅ Completo | 7 RF | 56 CA |
 | **Glossário Termos Domínio** | ✅ Completo | - | 150+ Termos |
 
 ### **TOTAL GERAL**: 80 Requisitos Funcionais | 406 Critérios de Aceite
@@ -259,11 +259,13 @@ Gerar arquivos XML válidos conforme leiautes do eSocial para envio aos órgãos
 #### Requisitos Específicos
 | ID | Descrição | Critérios |
 |----|-----------|-----------|
-| RF901 | Identificação Contratos a Unificar | 5 CA |
-| RF902 | Definição Contrato Unificado | 6 CA |
-| RF903 | Mapeamento Contratos Originais | 6 CA |
-| RF904 | Análise Intervalos e Continuidade | 6 CA |
-| RF905 | Cálculo Direitos Unificados | 6 CA |
+| RF901 | Identificação Contratos a Unificar | 8 CA |
+| RF902 | Definição Contrato Unificado | 9 CA |
+| RF903 | Mapeamento Contratos Originais | 9 CA |
+| RF904 | Análise Intervalos e Continuidade | 9 CA |
+| RF905 | Validação de Sobreposição Temporal | 6 CA |
+| RF906 | Cálculo Direitos Unificados | 9 CA |
+| RF907 | Validações de Consistência Temporal | 6 CA |
 
 ---
 
@@ -383,7 +385,6 @@ Gerar arquivos XML válidos conforme leiautes do eSocial para envio aos órgãos
 - [ ] Automações inteligentes
 - [ ] Integração com sistemas jurídicos
 - [ ] APIs públicas
-- [ ] Mobile/responsivo avançado
 
 ---
 

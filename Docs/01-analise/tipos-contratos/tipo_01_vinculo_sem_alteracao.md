@@ -35,6 +35,10 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 - **CA101.2** - Deve validar que matrícula informada corresponde à registrada no eSocial
 - **CA101.3** - Deve confirmar que categoria do trabalhador está compatível
 - **CA101.4** - Deve verificar se vínculo está ativo ou adequadamente encerrado
+- **CA101.5** - Sistema deve aplicar REGRA_VALIDA_MATRICULA
+- **CA101.6** - Deve verificar status do vínculo no momento do processo
+- **CA101.7** - Deve validar período do processo vs período do vínculo
+
 
 ### RF102 - Campos Obrigatórios Específicos
 **Como** usuário do sistema  
@@ -47,6 +51,9 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 - **CA102.3** - Campo matricula é obrigatório e deve corresponder ao eSocial
 - **CA102.4** - Campos de alteração de datas devem ser ocultos/desabilitados
 - **CA102.5** - Campo codCateg deve corresponder ao já informado no vínculo
+- **CA102.6** - nmTrab é opcional (carregado automaticamente do eSocial)
+- **CA102.7** - dtNascto é opcional (carregada automaticamente do eSocial)
+- **CA102.8** - Sistema deve aplicar validação condicional dos campos
 
 ### RF103 - Restrições de Dados
 **Como** sistema  
@@ -70,18 +77,47 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 - **CA104.2** - Deve verificar se período do processo é compatível com período do vínculo
 - **CA104.3** - Deve validar que trabalhador não possui outro S-2500 tipo 1 pendente
 - **CA104.4** - Deve confirmar que dados básicos (nome, CPF, nascimento) são consistentes
+- **CA104.5** - Deve aplicar REGRA_COMPATIBILIDADE_CATEGORIA_CLASSTRIB
+- **CA104.6** - Deve aplicar REGRA_COMPATIB_CATEG_EVENTO
 
-### RF105 - Informações Complementares Permitidas
+### RF105 - Validações de Categoria e CBO
+**Como** sistema
+**Quero** validar compatibilidade entre categoria e CBO
+**Para que** sejam respeitadas regras específicas do eSocial
+
+#### Critérios de Aceite:
+
+- **CA105.1** - codCBO é obrigatório exceto para categorias [901, 903, 904]
+- **CA105.2** - Sistema deve validar se CBO é compatível com categoria informada
+- **CA105.3** - Deve aplicar tabela de compatibilidade CBO vs Categoria
+- **CA105.4** - Deve alertar se CBO não é adequado para a função
+- **CA105.5** - Para categorias especiais, aplicar regras específicas de CBO
+
+### RF106 - Informações Complementares Permitidas
 **Como** usuário do sistema  
 **Quero** poder registrar informações adicionais relevantes  
 **Para que** sejam documentadas peculiaridades do caso
 
 #### Critérios de Aceite:
-- **CA105.1** - Deve permitir múltiplas observações sobre o processo
-- **CA105.2** - Deve permitir informar mudanças de categoria durante o contrato (mudCategAtiv)
-- **CA105.3** - Deve permitir registrar alterações de natureza da atividade
-- **CA105.4** - Campos de sucessão de vínculo devem estar disponíveis se aplicável
-- **CA105.5** - Deve permitir informações sobre responsabilidade indireta
+- **CA106.1** - Deve permitir múltiplas observações sobre o processo
+- **CA106.2** - Deve permitir informar mudanças de categoria durante o contrato (mudCategAtiv)
+- **CA106.3** - Deve permitir registrar alterações de natureza da atividade
+- **CA106.4** - Campos de sucessão de vínculo devem estar disponíveis se aplicável
+- **CA106.5** - Deve permitir informações sobre responsabilidade indireta
+
+### RF107 - Carregamento Automático de Dados eSocial
+**Como** sistema
+**Quero** carregar automaticamente dados do eSocial
+**Para que** seja garantida consistência e reduzido trabalho manual
+
+#### Critérios de Aceite:
+
+- **CA107.1** - Sistema deve buscar automaticamente dados do vínculo no eSocial
+- **CA107.2** - Deve carregar: nome, CPF, data nascimento, categoria, data admissão
+- **CA107.3** - Deve carregar data desligamento se vínculo encerrado
+- **CA107.4** - Deve validar se dados carregados são consistentes
+- **CA107.5** - Deve alertar se há divergências entre informado vs eSocial
+- **CA107.6** - Deve permitir refresh/recarregamento dos dados
 
 ## Regras de Negócio Específicas
 
@@ -104,6 +140,24 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 - Mesmo trabalhador/matrícula não pode ter múltiplos registros tipo 1 no mesmo processo
 - Diferentes processos podem conter o mesmo trabalhador tipo 1
 - Sistema deve validar unicidade dentro do escopo do processo
+
+### RN105 - Validação de Matrícula
+- Matrícula deve existir e estar ativa no eSocial do empregador
+- Não pode conter "eSocial" nas 7 primeiras posições
+- Deve corresponder exatamente ao registro original
+- Sistema deve aplicar REGRA_VALIDA_MATRICULA
+
+### RN106 - Compatibilidade Categoria
+- Categoria deve ser compatível com o registrado no eSocial
+- Deve aplicar REGRA_COMPATIBILIDADE_CATEGORIA_CLASSTRIB
+- CBO deve ser adequado à categoria (exceto [901, 903, 904])
+- Sistema deve validar tabelas de compatibilidade
+
+### RN107 - Carregamento Automático
+- Sistema deve carregar dados automaticamente do eSocial
+- Campos nmTrab e dtNascto são opcionais para tipo 1
+- Dados carregados têm prioridade sobre informação manual
+- Divergências devem gerar alertas para o usuário
 
 ## Interface Específica
 
@@ -128,6 +182,10 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 - Consistência de categoria profissional
 - Verificação de duplicidade no processo
 
+### Seção Integração eSocial
+- Botão refresh: Para recarregar dados do eSocial
+- Alertas de divergência: Se houver inconsistências
+
 ## Cenários de Teste Específicos
 
 ### CT101 - Cadastro Tipo 1 Válido
@@ -139,29 +197,54 @@ Trabalhador possui vínculo já cadastrado no eSocial com:
 **E** deve permitir cadastro apenas de informações adicionais  
 **E** deve salvar com sucesso
 
-### CT102 - Validação Matrícula Inexistente
+### CT102 - Validação Matrícula Inexistente 
 **Dado que** informei matrícula que não existe no eSocial  
 **Quando** tento prosseguir com tipo 1  
-**Então** sistema deve exibir erro "Matrícula não encontrada no eSocial"  
+**Então**  sistema deve aplicar REGRA_VALIDA_MATRICULA
+**E** sistema deve exibir erro "Matrícula não encontrada no eSocial"  
 **E** deve impedir prosseguimento  
 **E** deve sugerir verificação da matrícula
 
-### CT103 - Tentativa Alteração Data
+### CT103 - Carregamento Automático Dados eSocial
+**Dado que** informei matrícula válida do eSocial
+**Quando** campo perde foco
+**Então** sistema deve buscar dados automaticamente
+**E** deve preencher: nome, CPF, nascimento, categoria
+**E** deve carregar data admissão e desligamento (se houver)
+**E** deve exibir confirmação "Dados carregados do eSocial"
+**E** deve marcar campos como somente leitura
+
+### CT104 - Tentativa Alteração Data
 **Dado que** estou cadastrando trabalhador tipo 1  
 **Quando** sistema carrega data de admissão do eSocial  
 **Então** campo deve estar visível mas desabilitado  
 **E** não deve permitir alteração manual  
 **E** deve manter valor original durante todo o processo
 
-### CT104 - Duplicidade no Processo
+### CT105 - Duplicidade no Processo
 **Dado que** processo já possui trabalhador tipo 1 com CPF "12345678901"  
 **Quando** tento adicionar mesmo CPF novamente como tipo 1  
 **Então** sistema deve exibir erro "Trabalhador já cadastrado neste processo"  
 **E** deve oferecer opção de editar registro existente  
 **E** não deve permitir criação de duplicata
 
-### CT105 - Carregamento Automático de Dados
-**Dado que** informei matrícula válida do eSocial  
+### CT106 - Validação CBO por Categoria
+**Dado que** categoria carregada é "101 - Empregado geral"
+**E** informo CBO incompatível com esta categoria
+**Quando** sistema valida informações
+**Então** deve aplicar REGRA_COMPATIB_CATEG_EVENTO
+**E** deve alertar "CBO incompatível com categoria 101"
+**E** deve sugerir CBOs adequados
+
+### CT107 - Categoria Especial sem CBO (NOVO)
+**Dado que** trabalhador possui categoria "901 - Dirigente sindical"
+**Quando** não informo CBO
+**Então** sistema deve aceitar (CBO opcional para [901, 903, 904])
+**E** não deve exibir erro de CBO obrigatório
+**E** deve processar normalmente
+
+### CT108 - Carregamento Automático de Dados
+**Dado que** informei código do funci   
 **Quando** campo perde foco  
 **Então** sistema deve buscar dados automaticamente  
 **E** deve preencher: nome, CPF, nascimento, categoria  
