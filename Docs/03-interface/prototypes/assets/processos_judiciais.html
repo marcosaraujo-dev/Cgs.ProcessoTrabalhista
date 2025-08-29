@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processos Judiciais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e5aa8 0%, #4a73c1 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-control {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2e5aa8;
+            box-shadow: 0 0 0 3px rgba(46, 90, 168, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #2e5aa8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e4080;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .results-header h3 {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .results-count {
+            color: #6b7280;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f9fafb;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-ativo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-concluido {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-cancelado {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, -50%); }
+            to { opacity: 0; transform: translate(-50%, -40%); }
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            background-color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Processos Judiciais</h1>
+    </div>
+
+    <div class="container">
+        <!-- Seção de Pesquisa -->
+        <div class="search-section">
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="numeroProcesso">Número do Processo</label>
+                    <input type="text" id="numeroProcesso" class="form-control" placeholder="Ex: 76455798">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dataSentenca">Data da Sentença</label>
+                    <input type="date" id="dataSentenca" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="vara">Vara</label>
+                    <input type="text" id="vara" class="form-control" placeholder="Ex: 1254">
+                </div>
+
+                <button class="btn btn-primary" onclick="consultarProcessos()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
+                    </svg>
+                    Consultar
+                </button>
+
+                <button class="btn btn-success" onclick="novoProcesso()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                    </svg>
+                    Novo Processo
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção de Resultados -->
+        <div class="results-section">
+            <div class="results-header">
+                <div>
+                    <h3>Processos Localizados</h3>
+                    <span class="results-count">4 registros encontrados</span>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Processo</th>
+                            <th>Data Sentença</th>
+                            <th>Vara</th>
+                            <th>UF</th>
+                            <th>Município</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>76455798</strong></td>
+                            <td>19/05/2022</td>
+                            <td>1254</td>
+                            <td>SP</td>
+                            <td>Guarulhos</td>
+                            <td><span class="status-badge status-ativo">Ativo</span></td>
+                            <td class="actions-cell">
+                                <button class="btn btn-outline btn-sm" onclick="editarProcesso(76455798)">
+                                    <svg class="btn-icon" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>76455798</strong></td>
+                            <td>21/05/2022</td>
+                            <td>2578</td>
+                            <td>SP</td>
+                            <td>Osasco</td>
+                            <td><span class="status-badge status-concluido">Concluído</span></td>
+                            <td class="actions-cell">
+                                <button class="btn btn-outline btn-sm" onclick="editarProcesso(76455798)">
+                                    <svg class="btn-icon" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>97895512</strong></td>
+                            <td>05/03/2023</td>
+                            <td>6388</td>
+                            <td>SP</td>
+                            <td>Santo André</td>
+                            <td><span class="status-badge status-ativo">Ativo</span></td>
+                            <td class="actions-cell">
+                                <button class="btn btn-outline btn-sm" onclick="editarProcesso(97895512)">
+                                    <svg class="btn-icon" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>104678799</strong></td>
+                            <td>12/07/2023</td>
+                            <td>0100</td>
+                            <td>SP</td>
+                            <td>São Paulo</td>
+                            <td><span class="status-badge status-ativo">Ativo</span></td>
+                            <td class="actions-cell">
+                                <button class="btn btn-outline btn-sm" onclick="editarProcesso(104678799)">
+                                    <svg class="btn-icon" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição -->
+    <div class="modal-overlay" id="modalProcesso">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Novo Processo Judicial</h2>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="formProcesso">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="numeroProcessoModal">Número do Processo *</label>
+                            <input type="text" id="numeroProcessoModal" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="origem">Origem *</label>
+                            <select id="origem" class="form-control" required>
+                                <option value="">Selecione...</option>
+                                <option value="1">Justiça do Trabalho</option>
+                                <option value="2">CCP - Comissão de Conciliação Prévia</option>
+                                <option value="3">Ninter - Núcleo Intersindical</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dataSentencaModal">Data da Sentença *</label>
+                            <input type="date" id="dataSentencaModal" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="vara">Vara *</label>
+                            <input type="text" id="varaModal" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="uf">UF *</label>
+                            <select id="uf" class="form-control" required>
+                                <option value="">Selecione...</option>
+                                <option value="SP">SP</option>
+                                <option value="RJ">RJ</option>
+                                <option value="MG">MG</option>
+                                <option value="RS">RS</option>
+                                <option value="PR">PR</option>
+                                <option value="SC">SC</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="codigoMunicipio">Código do Município *</label>
+                            <input type="text" id="codigoMunicipio" class="form-control" required placeholder="Ex: 354780">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="codigoIdentificacaoVara">Código de Identificação da Vara</label>
+                            <input type="text" id="codigoIdentificacaoVara" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dataAcordoCCP">Data do Acordo CCP</label>
+                            <input type="date" id="dataAcordoCCP" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tipoCCP">Tipo CCP</label>
+                            <select id="tipoCCP" class="form-control">
+                                <option value="">Selecione...</option>
+                                <option value="1">Sindical</option>
+                                <option value="2">Empresarial</option>
+                                <option value="3">Mista</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cnpjCCP">CNPJ CCP</label>
+                            <input type="text" id="cnpjCCP" class="form-control" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+
+                    <div class="form-row full-width">
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" class="form-control" rows="3" placeholder="Observações sobre o processo..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" form="formProcesso" onclick="salvarProcesso()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function consultarProcessos() {
+            // Simular consulta
+            console.log('Consultando processos...');
+        }
+
+        function novoProcesso() {
+            document.getElementById('modalTitle').textContent = 'Novo Processo Judicial';
+            document.getElementById('formProcesso').reset();
+            document.getElementById('modalProcesso').style.display = 'flex';
+        }
+
+        function editarProcesso(numeroProcesso) {
+            document.getElementById('modalTitle').textContent = 'Editar Processo Judicial';
+            
+            // Simular carregamento dos dados do processo
+            document.getElementById('numeroProcessoModal').value = numeroProcesso;
+            document.getElementById('origem').value = '1';
+            document.getElementById('dataSentencaModal').value = '2022-05-19';
+            document.getElementById('varaModal').value = '1254';
+            document.getElementById('uf').value = 'SP';
+            document.getElementById('codigoMunicipio').value = '354780';
+            
+            document.getElementById('modalProcesso').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalProcesso').style.display = 'none';
+        }
+
+        function salvarProcesso() {
+            // Validar campos obrigatórios
+            const campos = ['numeroProcessoModal', 'origem', 'dataSentencaModal', 'varaModal', 'uf', 'codigoMunicipio'];
+            let valido = true;
+            
+            campos.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (!elemento.value.trim()) {
+                    elemento.style.borderColor = '#ef4444';
+                    valido = false;
+                } else {
+                    elemento.style.borderColor = '#d1d5db';
+                }
+            });
+            
+            if (!valido) {
+                mostrarTooltip('Por favor, preencha todos os campos obrigatórios.', 3000);
+                return;
+            }
+            
+            // Simular salvamento com loading
+            const btnSalvar = document.querySelector('[type="submit"][form="formProcesso"]');
+            const textoOriginal = btnSalvar.textContent;
+            
+            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.disabled = true;
+            
+            setTimeout(() => {
+                btnSalvar.textContent = textoOriginal;
+                btnSalvar.disabled = false;
+                
+                // Mostrar tooltip de sucesso
+                mostrarTooltip('Processo salvo com sucesso!', 3000);
+                
+                setTimeout(() => {
+                    fecharModal();
+                }, 1000);
+            }, 1500);
+        }
+
+        function mostrarTooltip(mensagem, duracao = 3000) {
+            // Criar tooltip dinamicamente se não existir
+            let tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            document.body.appendChild(tooltip);
+            
+            tooltip.textContent = mensagem;
+            tooltip.style.display = 'block';
+            tooltip.style.position = 'fixed';
+            tooltip.style.top = '50%';
+            tooltip.style.left = '50%';
+            tooltip.style.transform = 'translate(-50%, -50%)';
+            tooltip.style.backgroundColor = '#10b981';
+            tooltip.style.color = 'white';
+            tooltip.style.padding = '12px 20px';
+            tooltip.style.borderRadius = '6px';
+            tooltip.style.fontSize = '14px';
+            tooltip.style.fontWeight = '500';
+            tooltip.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+            tooltip.style.zIndex = '9999';
+            tooltip.style.maxWidth = '400px';
+            tooltip.style.textAlign = 'center';
+            tooltip.style.animation = 'fadeIn 0.3s ease-in';
+
+            setTimeout(() => {
+                tooltip.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(tooltip);
+                }, 300);
+            }, duracao);
+        }
+
+        // Fechar modal ao clicar fora dele
+        document.getElementById('modalProcesso').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModal();
+            }
+        });
+    </script>
+</body>
+</html>

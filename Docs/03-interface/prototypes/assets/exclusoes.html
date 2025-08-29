@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclusões (S-3500) - Fase 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e5aa8 0%, #4a73c1 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-preview {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .preview-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            opacity: 0.9;
+        }
+
+        .preview-title {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .preview-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .preview-content {
+            padding: 40px;
+        }
+
+        .feature-description {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .feature-description h3 {
+            color: #1e293b;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .feature-description p {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .warning-card {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 25px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            width: 20px;
+            height: 20px;
+            color: #ef4444;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .warning-content h4 {
+            color: #dc2626;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .warning-content p {
+            color: #991b1b;
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .feature-card-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 15px;
+            color: #ef4444;
+        }
+
+        .feature-card h4 {
+            color: #1e293b;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .mockup-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .mockup-title {
+            text-align: center;
+            color: #475569;
+            font-size: 18px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .events-list {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            opacity: 0.7;
+        }
+
+        .event-item {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-info {
+            flex: 1;
+        }
+
+        .event-info h4 {
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .event-info p {
+            color: #64748b;
+            font-size: 12px;
+            margin: 2px 0;
+        }
+
+        .event-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-enviado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-processado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .timeline {
+            margin: 40px 0;
+        }
+
+        .timeline-title {
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .timeline-items {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 0 20px;
+        }
+
+        .timeline-items::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            text-align: center;
+            position: relative;
+            background: white;
+            padding: 0 15px;
+        }
+
+        .timeline-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .timeline-item.completed .timeline-circle {
+            background: #10b981;
+            color: white;
+        }
+
+        .timeline-item.active .timeline-circle {
+            background: #ef4444;
+            color: white;
+        }
+
+        .timeline-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .timeline-item.completed .timeline-label {
+            color: #10b981;
+        }
+
+        .timeline-item.active .timeline-label {
+            color: #ef4444;
+        }
+
+        .status-banner {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-banner-icon {
+            width: 20px;
+            height: 20px;
+            color: #d97706;
+            flex-shrink: 0;
+        }
+
+        .status-banner-text {
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .action-center {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .disabled-overlay {
+            position: relative;
+        }
+
+        .disabled-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>Exclusão de Eventos (S-3500)</h1>
+            <span class="phase-badge">Fase 2 - Em Desenvolvimento</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="feature-preview">
+            <div class="preview-header">
+                <svg class="preview-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                </svg>
+                <h1 class="preview-title">S-3500</h1>
+                <p class="preview-subtitle">Exclusão de Eventos - Processo Trabalhista</p>
+            </div>
+
+            <div class="preview-content">
+                <div class="feature-description">
+                    <h3>Funcionalidade em Desenvolvimento</h3>
+                    <p>O evento S-3500 é utilizado para tornar sem efeito um evento S-2500 ou S-2501 enviado indevidamente ao eSocial, permitindo correções e cancelamentos precisos.</p>
+                </div>
+
+                <div class="warning-card">
+                    <svg class="warning-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                    </svg>
+                    <div class="warning-content">
+                        <h4>Atenção - Operação Crítica</h4>
+                        <p>A exclusão de eventos é uma operação irreversível que afeta diretamente os dados no eSocial. Esta funcionalidade requer validações especiais e será implementada com controles rigorosos de segurança.</p>
+                    </div>
+                </div>
+
+                <div class="status-banner">
+                    <svg class="status-banner-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                    </svg>
+                    <span class="status-banner-text">Esta funcionalidade será implementada na Fase 2 do projeto</span>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <svg class="feature-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                        <h4>Listagem de Eventos</h4>
+                        <p>Visualização de todos os eventos S-2500 e S-2501 enviados, com filtros por processo, trabalhador e status.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <svg class="feature-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <h4>Seleção Granular</h4>
+                        <p>Permite selecionar eventos específicos para exclusão, incluindo tributos individuais de um mesmo trabalhador.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <svg class="feature-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                        <h4>Validações de Segurança</h4>
+                        <p>Verificações automáticas de dependências e confirmações múltiplas antes de proceder com a exclusão.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <svg class="feature-card-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                        </svg>
+                        <h4>Log de Auditoria</h4>
+                        <p>Registro completo de todas as exclusões realizadas com data, hora, usuário e motivo da exclusão.</p>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <h3 class="timeline-title">Cronograma de Desenvolvimento</h3>
+                    <div class="timeline-items">
+                        <div class="timeline-item completed">
+                            <div class="timeline-circle">✓</div>
+                            <div class="timeline-label">Análise</div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-circle">✓</div>
+                            <div class="timeline-label">Design</div>
+                        </div>
+                        <div class="timeline-item active">
+                            <div class="timeline-circle">3</div>
+                            <div class="timeline-label">Desenvolvimento</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-circle">4</div>
+                            <div class="timeline-label">Testes</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-circle">5</div>
+                            <div class="timeline-label">Homologação</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mockup-section">
+                    <h3 class="mockup-title">Preview da Interface (Mockup)</h3>
+                    <div class="events-list disabled-overlay">
+                        <div class="event-item">
+                            <div class="event-info">
+                                <h4>S-2500 - Processo Trabalhista</h4>
+                                <p><strong>Processo:</strong> 76455798 | <strong>Trabalhador:</strong> Nicollas Araujo</p>
+                                <p><strong>Recibo:</strong> 1234567890123456789012345 | <strong>Data Envio:</strong> 15/01/2024</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="event-status status-processado">Processado</span>
+                                <div class="event-actions">
+                                    <button class="btn-sm">Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-item">
+                            <div class="event-info">
+                                <h4>S-2501 - Tributos (Contribuição Patronal)</h4>
+                                <p><strong>Processo:</strong> 76455798 | <strong>Trabalhador:</strong> Nicollas Araujo</p>
+                                <p><strong>Recibo:</strong> 1234567890123456789012346 | <strong>Data Envio:</strong> 20/01/2024</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="event-status status-enviado">Enviado</span>
+                                <div class="event-actions">
+                                    <button class="btn-sm">Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-item">
+                            <div class="event-info">
+                                <h4>S-2501 - Tributos (FGTS)</h4>
+                                <p><strong>Processo:</strong> 76455798 | <strong>Trabalhador:</strong> Nicollas Araujo</p>
+                                <p><strong>Recibo:</strong> 1234567890123456789012347 | <strong>Data Envio:</strong> 20/01/2024</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="event-status status-processado">Processado</span>
+                                <div class="event-actions">
+                                    <button class="btn-sm">Excluir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-center">
+                    <button class="btn btn-outline" onclick="voltarMenu()">
+                        <svg class="btn-icon" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+                        </svg>
+                        Voltar ao Menu Principal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function voltarMenu() {
+            if (window.parent && window.parent.showContent) {
+                window.parent.showContent('welcome');
+            } else {
+                // Se não estiver em iframe, simular voltar
+                alert('Voltando ao menu principal...');
+            }
+        }
+    </script>
+</body>
+</html>
