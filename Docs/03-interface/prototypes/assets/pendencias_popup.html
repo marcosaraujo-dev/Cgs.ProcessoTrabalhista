@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de Pendências</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-title svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .validation-summary {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .summary-icon.success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .summary-icon.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .summary-icon.error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .summary-content h3 {
+            color: #1e293b;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .summary-content p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .pendencias-list {
+            margin-bottom: 25px;
+        }
+
+        .pendencia-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .pendencia-item:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pendencia-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .pendencia-icon.error {
+            color: #dc2626;
+        }
+
+        .pendencia-icon.warning {
+            color: #d97706;
+        }
+
+        .pendencia-icon.info {
+            color: #2563eb;
+        }
+
+        .pendencia-content {
+            flex: 1;
+        }
+
+        .pendencia-titulo {
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .pendencia-descricao {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .pendencia-campo {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pendencia-acao {
+            margin-top: 8px;
+        }
+
+        .btn-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-link svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        .modal-footer {
+            padding: 25px 30px;
+            border-top: 1px solid #e5e7eb;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .footer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-info svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .success-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-state svg {
+            width: 64px;
+            height: 64px;
+            color: #16a34a;
+            margin-bottom: 20px;
+        }
+
+        .success-state h3 {
+            color: #16a34a;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .success-state p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .demo-controls {
+            background: #e0f2fe;
+            border: 1px solid #7dd3fc;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .demo-controls h4 {
+            color: #0369a1;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            background: white;
+            border: 1px solid #7dd3fc;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #0369a1;
+        }
+
+        .demo-btn:hover {
+            background: #f0f9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                    </svg>
+                    Verificação de Pendências
+                </div>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="demo-controls">
+                    <h4>Controles de Demonstração</h4>
+                    <div class="demo-buttons">
+                        <button class="demo-btn" onclick="mostrarSemPendencias()">✓ Sem Pendências</button>
+                        <button class="demo-btn" onclick="mostrarComAlertas()">⚠ Com Alertas</button>
+                        <button class="demo-btn" onclick="mostrarComErros()">✗ Com Erros</button>
+                        <button class="demo-btn" onclick="mostrarMisto()">📋 Misto</button>
+                    </div>
+                </div>
+
+                <div id="conteudoPendencias">
+                    <!-- Conteúdo será inserido dinamicamente -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="footer-info" id="footerInfo">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                    </svg>
+                    Validação executada em tempo real
+                </div>
+                <div class="footer-actions" id="footerActions">
+                    <button type="button" class="btn btn-outline" onclick="fecharModal()">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fecharModal() {
+            // Se estiver em popup/modal real, fecharia aqui
+            alert('Popup fechado');
+        }
+
+        function mostrarSemPendencias() {
+            const conteudo = document.getElementById('conteudoPendencias');
+            conteudo.innerHTML = `
+                <div class="validation-summary">
+                    <div class="summary-icon success">
+                        <svg viewBox="0 0 20 20" fill="currentColor" style="width: 20px; height: 20px;">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Validação Concluída com Sucesso</h3>
+                        <p>Todos os dados foram validados e estão de acordo com as regras do eSocial.</p>
+                    </div>
+                </div>
+
+                <div class="success-state">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                    </svg>
+                    <h3>Pronto para Transmissão</h3>
+                    <p>O evento está válido e pode ser transmitido para o eSocial sem restrições.</p>
+                </div>
+            `;
+
+            document.getElementById('footerInfo').innerHTML = `
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                </svg>
+                Nenhuma pendência encontrada
+            `;
+
+            document.getElementById('footerActions').innerHTML = `
+                <button type="button" class="btn btn-primary" onclick="prosseguirTransmissao()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                    </svg>
+                    Prosseguir com Transmissão
+                </button>
+            `;
+        }
+
+        function mostrarComAlertas() {
+            const conteudo = document.getElementById('conteudoPendencias');
+            conteudo.innerHTML = `
+                <div class="validation-summary">
+                    <div class="summary-icon warning">
+                        <svg viewBox="0 0 20 20" fill="currentColor" style="width: 20px; height: 20px;">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Alertas Identificados</h3>
+                        <p>Foram encontrados 3 alertas que merecem atenção, mas não impedem a transmissão.</p>
+                    </div>
+                </div>
+
+                <div class="pendencias-list">
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon warning" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Data de Fim do Contrato não preenchida</div>
+                            <div class="pendencia-descricao">
+                                O campo "Data Fim do Contrato" está em branco. Verifique se o contrato é por prazo indeterminado ou se a data deve ser informada.
+                            </div>
+                            <span class="pendencia-campo">Step 4 - Dados do Contrato</span>
+                            <div class="pendencia-acao">
+                                <a href="#" class="btn-link" onclick="irParaCampo(4)">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                                    </svg>
+                                    Ir para o campo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon warning" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Categoria do trabalhador pode estar incorreta</div>
+                            <div class="pendencia-descricao">
+                                A categoria selecionada (101 - Empregado Geral) pode não corresponder à natureza da atividade informada. Verifique a adequação.
+                            </div>
+                            <span class="pendencia-campo">Step 3 - Dados do Trabalhador</span>
+                            <div class="pendencia-acao">
+                                <a href="#" class="btn-link" onclick="irParaCampo(3)">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                                    </svg>
+                                    Revisar categoria
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon info" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">PIS/NIT não informado</div>
+                            <div class="pendencia-descricao">
+                                O campo PIS/NIT está vazio. Embora não seja obrigatório, sua informação pode ser útil para identificação do trabalhador.
+                            </div>
+                            <span class="pendencia-campo">Step 3 - Dados do Trabalhador</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('footerInfo').innerHTML = `
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                </svg>
+                3 alertas encontrados - Transmissão permitida
+            `;
+
+            document.getElementById('footerActions').innerHTML = `
+                <button type="button" class="btn btn-outline" onclick="fecharModal()">
+                    Revisar Dados
+                </button>
+                <button type="button" class="btn btn-warning" onclick="prosseguirComAlertas()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                    </svg>
+                    Transmitir Mesmo Assim
+                </button>
+            `;
+        }
+
+        function mostrarComErros() {
+            const conteudo = document.getElementById('conteudoPendencias');
+            conteudo.innerHTML = `
+                <div class="validation-summary">
+                    <div class="summary-icon error">
+                        <svg viewBox="0 0 20 20" fill="currentColor" style="width: 20px; height: 20px;">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Erros Críticos Identificados</h3>
+                        <p>Foram encontrados 2 erros que impedem a transmissão. Corrija-os antes de prosseguir.</p>
+                    </div>
+                </div>
+
+                <div class="pendencias-list">
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon error" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">CPF do trabalhador inválido</div>
+                            <div class="pendencia-descricao">
+                                O CPF informado (123.456.789-00) não passou na validação do dígito verificador. Corrija o número antes de prosseguir.
+                            </div>
+                            <span class="pendencia-campo">Step 3 - Dados do Trabalhador</span>
+                            <div class="pendencia-acao">
+                                <a href="#" class="btn-link" onclick="irParaCampo(3)">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                                    </svg>
+                                    Corrigir CPF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon error" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Data de início posterior à data de fim</div>
+                            <div class="pendencia-descricao">
+                                A data de início do contrato (15/12/2023) é posterior à data de fim informada (10/12/2023). Verifique e corrija as datas.
+                            </div>
+                            <span class="pendencia-campo">Step 4 - Dados do Contrato</span>
+                            <div class="pendencia-acao">
+                                <a href="#" class="btn-link" onclick="irParaCampo(4)">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                                    </svg>
+                                    Corrigir datas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('footerInfo').innerHTML = `
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                </svg>
+                2 erros críticos - Transmissão bloqueada
+            `;
+
+            document.getElementById('footerActions').innerHTML = `
+                <button type="button" class="btn btn-primary" onclick="fecharModal()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                    </svg>
+                    Corrigir Erros
+                </button>
+            `;
+        }
+
+        function mostrarMisto() {
+            const conteudo = document.getElementById('conteudoPendencias');
+            conteudo.innerHTML = `
+                <div class="validation-summary">
+                    <div class="summary-icon warning">
+                        <svg viewBox="0 0 20 20" fill="currentColor" style="width: 20px; height: 20px;">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Validação com Pendências</h3>
+                        <p>Encontrados: 1 erro, 2 alertas e 1 informação. Corrija o erro para prosseguir.</p>
+                    </div>
+                </div>
+
+                <div class="pendencias-list">
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon error" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Valor da remuneração obrigatório</div>
+                            <div class="pendencia-descricao">
+                                O campo "Valor da Remuneração" é obrigatório e não foi preenchido. Este campo é necessário para o cálculo dos tributos.
+                            </div>
+                            <span class="pendencia-campo">Step 4 - Dados do Contrato</span>
+                            <div class="pendencia-acao">
+                                <a href="#" class="btn-link" onclick="irParaCampo(4)">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                                    </svg>
+                                    Preencher valor
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon warning" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Data de nascimento próxima à maioridade</div>
+                            <div class="pendencia-descricao">
+                                O trabalhador possui data de nascimento que indica menor idade. Verifique se a categoria selecionada permite trabalho de menor.
+                            </div>
+                            <span class="pendencia-campo">Step 3 - Dados do Trabalhador</span>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon warning" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Regime previdenciário requer atenção</div>
+                            <div class="pendencia-descricao">
+                                O regime previdenciário selecionado pode não estar adequado ao tipo de contrato informado. Revise a configuração.
+                            </div>
+                            <span class="pendencia-campo">Step 4 - Dados do Contrato</span>
+                        </div>
+                    </div>
+
+                    <div class="pendencia-item">
+                        <svg class="pendencia-icon info" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                        <div class="pendencia-content">
+                            <div class="pendencia-titulo">Sugestão de melhoria</div>
+                            <div class="pendencia-descricao">
+                                Considere informar detalhes adicionais sobre as condições especiais de trabalho para maior precisão no evento eSocial.
+                            </div>
+                            <span class="pendencia-campo">Step 4 - Dados do Contrato</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('footerInfo').innerHTML = `
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                </svg>
+                1 erro, 2 alertas, 1 info - Corrija o erro primeiro
+            `;
+
+            document.getElementById('footerActions').innerHTML = `
+                <button type="button" class="btn btn-primary" onclick="fecharModal()">
+                    <svg class="btn-icon" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                    </svg>
+                    Corrigir Pendências
+                </button>
+            `;
+        }
+
+        function irParaCampo(step) {
+            alert(`Redirecionando para o Step ${step} para corrigir o campo...`);
+        }
+
+        function prosseguirTransmissao() {
+            alert('Prosseguindo com a transmissão do evento...');
+        }
+
+        function prosseguirComAlertas() {
+            if (confirm('Tem certeza de que deseja prosseguir com a transmissão mesmo com os alertas identificados?')) {
+                alert('Transmitindo evento com alertas...');
+            }
+        }
+
+        // Inicializar com estado de alertas
+        mostrarComAlertas();
+    </script>
+</body>
+</html>

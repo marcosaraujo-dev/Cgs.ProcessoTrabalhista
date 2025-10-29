@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tributos (S-2501)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2e5aa8 0%, #4a73c1 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .wizard-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: #f8fafc;
+            padding: 20px 30px 30px 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .wizard-steps {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            right: -50%;
+            width: calc(100% - 30px);
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+            transform: translateX(15px);
+        }
+
+        .step.completed:not(:last-child)::after {
+            background: #10b981;
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-align: center;
+            order: 1;
+            min-height: 18px;
+            white-space: nowrap;
+        }
+
+        .step.active .step-label {
+            color: #2e5aa8;
+            font-weight: 600;
+        }
+
+        .step.completed .step-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+            z-index: 2;
+            order: 2;
+        }
+
+        .step.active .step-circle {
+            background: #2e5aa8;
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: #10b981;
+            color: white;
+        }
+
+        .wizard-content {
+            padding: 40px 30px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.single {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row.triple {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2e5aa8;
+            box-shadow: 0 0 0 3px rgba(46, 90, 168, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            margin: 0;
+        }
+
+        .info-card {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .info-card h4 {
+            color: #0369a1;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-card p {
+            color: #075985;
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .warning-card {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning-card h4 {
+            color: #d97706;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .warning-card p {
+            color: #92400e;
+            font-size: 13px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .tributos-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .tributo-item {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tributo-item:last-child {
+            border-bottom: none;
+        }
+
+        .tributo-info {
+            flex: 1;
+        }
+
+        .tributo-info h4 {
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .tributo-info p {
+            color: #64748b;
+            font-size: 13px;
+            margin: 2px 0;
+        }
+
+        .tributo-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .wizard-footer {
+            padding: 25px 30px;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #2e5aa8;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e4080;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .tooltip {
+            position: fixed;
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, -50%); }
+            to { opacity: 0; transform: translate(-50%, -40%); }
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            background-color: inherit;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Tributos Decorrentes (S-2501)</h1>
+    </div>
+
+    <div class="container">
+        <div class="wizard-container">
+            <!-- Wizard Header -->
+            <div class="wizard-header">
+                <div class="wizard-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Seleção</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Identificação</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Tributos</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">IRRF</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">Revisão</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Content -->
+            <div class="wizard-content">
+                <!-- Step 1: Seleção do Processo Trabalhista -->
+                <div class="step-content active" id="step1">
+                    <h2 class="step-title">Seleção do Processo Trabalhista</h2>
+                    <p class="step-description">Selecione o processo trabalhista (S-2500) para o qual deseja informar os tributos decorrentes.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="processoTrabalhista">Processo Trabalhista (S-2500) <span class="required">*</span></label>
+                            <select id="processoTrabalhista" class="form-control" required onchange="carregarDadosProcesso()">
+                                <option value="">Selecione o processo...</option>
+                                <option value="1">76455798 - Nicollas Araujo - EMPRESA EXEMPLO LTDA</option>
+                                <option value="2">97895512 - Mariane Araujo - EMPRESA DEMO LTDA</option>
+                                <option value="3">104678799 - Keiko Oliveira - EMPRESA TESTE LTDA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sequencialTributo">Sequencial do Tributo</label>
+                            <input type="number" id="sequencialTributo" class="form-control" placeholder="1" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <div id="dadosProcessoSelecionado" style="display: none;">
+                        <div class="info-card">
+                            <h4>Dados do Processo Selecionado</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                                <p><strong>Trabalhador:</strong> <span id="nomeTrabalhador">-</span></p>
+                                <p><strong>CPF:</strong> <span id="cpfTrabalhador">-</span></p>
+                                <p><strong>Empresa:</strong> <span id="nomeEmpresa">-</span></p>
+                                <p><strong>CNPJ:</strong> <span id="cnpjEmpresa">-</span></p>
+                                <p><strong>Período:</strong> <span id="periodoContrato">-</span></p>
+                                <p><strong>Status:</strong> <span id="statusProcesso">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Identificação do Período -->
+                <div class="step-content" id="step2">
+                    <h2 class="step-title">Identificação do Período</h2>
+                    <p class="step-description">Informe o período de apuração e pagamento dos tributos.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="periodoApuracao">Período de Apuração <span class="required">*</span></label>
+                            <input type="month" id="periodoApuracao" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="indicativoApuracao">Indicativo de Apuração <span class="required">*</span></label>
+                            <select id="indicativoApuracao" class="form-control" required>
+                                <option value="">Selecione...</option>
+                                <option value="1">Mensal</option>
+                                <option value="2">Anual (13º salário)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dataVencimento">Data de Vencimento <span class="required">*</span></label>
+                            <input type="date" id="dataVencimento" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dataPagamento">Data de Pagamento</label>
+                            <input type="date" id="dataPagamento" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="warning-card">
+                        <h4>Atenção</h4>
+                        <p>O período de apuração deve estar relacionado ao processo trabalhista selecionado e às datas de vigência do contrato.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3: Informações de Tributos -->
+                <div class="step-content" id="step3">
+                    <h2 class="step-title">Informações de Tributos</h2>
+                    <p class="step-description">Configure as informações de contribuições previdenciárias e FGTS.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="valorRemuneracao">Valor da Remuneração <span class="required">*</span></label>
+                            <input type="number" id="valorRemuneracao" class="form-control" required step="0.01" min="0" placeholder="0,00">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="valorBase">Valor Base Contribuição <span class="required">*</span></label>
+                            <input type="number" id="valorBase" class="form-control" required step="0.01" min="0" placeholder="0,00">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="codigoReceita">Código de Receita <span class="required">*</span></label>
+                            <select id="codigoReceita" class="form-control" required>
+                                <option value="">Selecione...</option>
+                                <option value="113851">113851 - CP patronal sobre remuneração</option>
+                                <option value="164651">164651 - CP GILRAT sobre remuneração</option>
+                                <option value="115681">115681 - CP Terceiros sobre remuneração</option>
+                                <option value="118651">118651 - FGTS sobre remuneração</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="aliquota">Alíquota (%)</label>
+                            <input type="number" id="aliquota" class="form-control" step="0.01" min="0" max="100" placeholder="0,00">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="valorTributo">Valor do Tributo Calculado</label>
+                            <input type="number" id="valorTributo" class="form-control" step="0.01" min="0" placeholder="0,00" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="suspensao">Indicativo de Suspensão</label>
+                            <select id="suspensao" class="form-control">
+                                <option value="">Não há suspensão</option>
+                                <option value="1">Mandado de Segurança</option>
+                                <option value="2">Recurso Administrativo</option>
+                                <option value="3">Medida Liminar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Cálculo Automático</h4>
+                        <p>O valor do tributo será calculado automaticamente com base no valor base e na alíquota informada quando você selecionar o código de receita.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4: Informações de IRRF -->
+                <div class="step-content" id="step4">
+                    <h2 class="step-title">Informações de IRRF</h2>
+                    <p class="step-description">Configure as informações de Imposto de Renda Retido na Fonte, se aplicável.</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Possui IRRF?</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="irrfSim" name="possuiIrrf" value="S" onchange="toggleIrrf(true)">
+                                    <label for="irrfSim">Sim</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="irrfNao" name="possuiIrrf" value="N" checked onchange="toggleIrrf(false)">
+                                    <label for="irrfNao">Não</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dadosIrrf" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="codigoReceitaIrrf">Código de Receita IRRF <span class="required">*</span></label>
+                                <select id="codigoReceitaIrrf" class="form-control">
+                                    <option value="">Selecione...</option>
+                                    <option value="0561">0561 - IRRF - Rendimentos do Trabalho</option>
+                                    <option value="3208">3208 - IRRF - 13º Salário</option>
+                                    <option value="0588">0588 - IRRF - Férias</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="valorBaseIrrf">Valor Base IRRF</label>
+                                <input type="number" id="valorBaseIrrf" class="form-control" step="0.01" min="0" placeholder="0,00">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="aliquotaIrrf">Alíquota IRRF (%)</label>
+                                <input type="number" id="aliquotaIrrf" class="form-control" step="0.01" min="0" max="100" placeholder="0,00">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="valorIrrf">Valor IRRF</label>
+                                <input type="number" id="valorIrrf" class="form-control" step="0.01" min="0" placeholder="0,00" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tipoRendimento">Tipo de Rendimento</label>
+                                <select id="tipoRendimento" class="form-control">
+                                    <option value="">Selecione...</option>
+                                    <option value="1">Salário</option>
+                                    <option value="2">13º Salário</option>
+                                    <option value="3">Férias</option>
+                                    <option value="4">Outros</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="numeroDeducao">Número de Dependentes</label>
+                                <input type="number" id="numeroDeducao" class="form-control" min="0" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="warning-card">
+                        <h4>Importante</h4>
+                        <p>As informações de IRRF devem ser preenchidas apenas quando houver retenção de imposto de renda sobre os valores do processo trabalhista.</p>
+                    </div>
+                </div>
+
+                <!-- Step 5: Revisão -->
+                <div class="step-content" id="step5">
+                    <h2 class="step-title">Revisão dos Dados</h2>
+                    <p class="step-description">Revise todas as informações dos tributos antes de prosseguir com a validação e transmissão.</p>
+
+                    <div id="resumoTributos" style="background: #f8fafc; padding: 25px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                        <h3 style="color: #1e293b; margin-bottom: 20px;">Resumo dos Tributos (S-2501)</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Processo Trabalhista</h4>
+                                <p style="margin-bottom: 15px;" id="resumoProcessoTrib">-</p>
+                                
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Período</h4>
+                                <p style="margin-bottom: 15px;" id="resumoPeriodo">-</p>
+                                
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Tributo</h4>
+                                <p style="margin-bottom: 15px;" id="resumoTributo">-</p>
+                            </div>
+                            
+                            <div>
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Valor Base</h4>
+                                <p style="margin-bottom: 15px;" id="resumoValorBase">-</p>
+                                
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Valor Calculado</h4>
+                                <p style="margin-bottom: 15px;" id="resumoValorCalculado">-</p>
+                                
+                                <h4 style="color: #475569; font-size: 14px; margin-bottom: 8px;">Status</h4>
+                                <p style="color: #10b981; font-weight: 500;">Pronto para validação</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Footer -->
+            <div class="wizard-footer">
+                <div>
+                    <button type="button" class="btn btn-outline" id="btnAnterior" onclick="voltarStep()" style="display: none;">
+                        <svg class="btn-icon" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
+                        </svg>
+                        Anterior
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-warning" onclick="verificarPendencias()" style="display: none;" id="btnPendencias">
+                        <svg class="btn-icon" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                        </svg>
+                        Verificar Pendências
+                    </button>
+                    
+                    <button type="button" class="btn btn-success" onclick="transmitirEvento()" style="display: none;" id="btnTransmitir">
+                        <svg class="btn-icon" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                        </svg>
+                        Transmitir Evento
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary" id="btnProximo" onclick="avancarStep()">
+                        Próximo
+                        <svg class="btn-icon" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function atualizarWizard() {
+            // Atualizar steps visuais
+            for (let i = 1; i <= totalSteps; i++) {
+                const step = document.querySelector(`[data-step="${i}"]`);
+                const content = document.getElementById(`step${i}`);
+                
+                step.classList.remove('active', 'completed');
+                content.classList.remove('active');
+                
+                if (i < currentStep) {
+                    step.classList.add('completed');
+                } else if (i === currentStep) {
+                    step.classList.add('active');
+                    content.classList.add('active');
+                }
+            }
+
+            // Atualizar botões
+            const btnAnterior = document.getElementById('btnAnterior');
+            const btnProximo = document.getElementById('btnProximo');
+            const btnPendencias = document.getElementById('btnPendencias');
+            const btnTransmitir = document.getElementById('btnTransmitir');
+
+            btnAnterior.style.display = currentStep > 1 ? 'flex' : 'none';
+            
+            if (currentStep === totalSteps) {
+                btnProximo.style.display = 'none';
+                btnPendencias.style.display = 'flex';
+                btnTransmitir.style.display = 'flex';
+                atualizarResumo();
+            } else {
+                btnProximo.style.display = 'flex';
+                btnPendencias.style.display = 'none';
+                btnTransmitir.style.display = 'none';
+            }
+        }
+
+        function avancarStep() {
+            if (validarStepAtual()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    atualizarWizard();
+                }
+            }
+        }
+
+        function voltarStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                atualizarWizard();
+            }
+        }
+
+        function validarStepAtual() {
+            const step = document.getElementById(`step${currentStep}`);
+            const required = step.querySelectorAll('[required]');
+            let valido = true;
+
+            required.forEach(campo => {
+                if (!campo.value.trim()) {
+                    campo.style.borderColor = '#ef4444';
+                    valido = false;
+                } else {
+                    campo.style.borderColor = '#d1d5db';
+                }
+            });
+
+            if (!valido) {
+                alert('Por favor, preencha todos os campos obrigatórios antes de continuar.');
+            }
+
+            return valido;
+        }
+
+        function carregarDadosProcesso() {
+            const select = document.getElementById('processoTrabalhista');
+            const dadosDiv = document.getElementById('dadosProcessoSelecionado');
+            
+            if (select.value) {
+                // Simular carregamento dos dados
+                document.getElementById('nomeTrabalhador').textContent = 'Nicollas Araujo';
+                document.getElementById('cpfTrabalhador').textContent = '123.456.789-00';
+                document.getElementById('nomeEmpresa').textContent = 'EMPRESA EXEMPLO LTDA';
+                document.getElementById('cnpjEmpresa').textContent = '12.345.678/0001-99';
+                document.getElementById('periodoContrato').textContent = '01/01/2023 a 31/12/2023';
+                document.getElementById('statusProcesso').textContent = 'Ativo';
+                
+                dadosDiv.style.display = 'block';
+            } else {
+                dadosDiv.style.display = 'none';
+            }
+        }
+
+        function toggleIrrf(mostrar) {
+            const dadosIrrf = document.getElementById('dadosIrrf');
+            dadosIrrf.style.display = mostrar ? 'block' : 'none';
+            
+            if (!mostrar) {
+                // Limpar campos IRRF
+                document.getElementById('codigoReceitaIrrf').value = '';
+                document.getElementById('valorBaseIrrf').value = '';
+                document.getElementById('aliquotaIrrf').value = '';
+                document.getElementById('valorIrrf').value = '';
+                document.getElementById('tipoRendimento').value = '';
+                document.getElementById('numeroDeducao').value = '';
+            }
+        }
+
+        function atualizarResumo() {
+            const processo = document.getElementById('processoTrabalhista');
+            const periodo = document.getElementById('periodoApuracao');
+            const receita = document.getElementById('codigoReceita');
+            const valorBase = document.getElementById('valorBase');
+            const valorTributo = document.getElementById('valorTributo');
+
+            document.getElementById('resumoProcessoTrib').textContent = processo.options[processo.selectedIndex]?.text || '-';
+            document.getElementById('resumoPeriodo').textContent = periodo.value ? 
+                new Date(periodo.value + '-01').toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}) : '-';
+            document.getElementById('resumoTributo').textContent = receita.options[receita.selectedIndex]?.text || '-';
+            document.getElementById('resumoValorBase').textContent = valorBase.value ? 
+                `R$ ${parseFloat(valorBase.value).toFixed(2).replace('.', ',')}` : '-';
+            document.getElementById('resumoValorCalculado').textContent = valorTributo.value ? 
+                `R$ ${parseFloat(valorTributo.value).toFixed(2).replace('.', ',')}` : '-';
+        }
+
+        function verificarPendencias() {
+
+			function verificarPendencias() {
+				// Abrir o popup de pendências em nova janela/popup
+				const popupWidth = 800;
+				const popupHeight = 600;
+				const left = (screen.width - popupWidth) / 2;
+				const top = (screen.height - popupHeight) / 2;
+
+				window.open(
+					'pendencias_popup.html',
+					'VerificarPendencias',
+					`width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+				);
+			}
+            // Simular verificação de pendências
+           // const pendencias = [
+           //     'Verificar se o período de apuração está correto',
+           //     'Confirmar alíquotas aplicadas conforme legislação vigente'
+           // ];
+           //
+           // if (pendencias.length > 0) {
+           //     let mensagem = 'Pendências encontradas:\n\n';
+           //     pendencias.forEach((pendencia, index) => {
+           //         mensagem += `${index + 1}. ${pendencia}\n`;
+           //     });
+           //     mensagem += '\nDeseja prosseguir mesmo assim?';
+           //     
+           //     if (confirm(mensagem)) {
+           //         alert('Validação concluída. O evento está pronto para transmissão.');
+           //     }
+           // } else {
+           //     alert('Nenhuma pendência encontrada. O evento está válido para transmissão.');
+           // }
+        }
+
+        function transmitirEvento() {
+            if (confirm('Confirma a transmissão do evento S-2501 para o eSocial?')) {
+                // Simular transmissão com loading
+                const btnTransmitir = document.getElementById('btnTransmitir');
+                const textoOriginal = btnTransmitir.innerHTML;
+                
+                btnTransmitir.innerHTML = `
+                    <svg class="btn-icon" viewBox="0 0 20 20" style="animation: spin 1s linear infinite;">
+                        <path d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/>
+                    </svg>
+                    Transmitindo...
+                `;
+                btnTransmitir.disabled = true;
+                
+                // Simular delay da transmissão
+                setTimeout(() => {
+                    // Restaurar botão
+                    btnTransmitir.innerHTML = textoOriginal;
+                    btnTransmitir.disabled = false;
+                    
+                    // Mostrar tooltip de sucesso
+                    mostrarTooltip('Evento S-2501 enviado para fila de transmissão com sucesso!', 4000);
+                    
+                    // Resetar formulário após transmissão
+                    setTimeout(() => {
+                        if (confirm('Evento transmitido! Deseja cadastrar novos tributos?')) {
+                            location.reload();
+                        }
+                    }, 2000);
+                }, 2000);
+            }
+        }
+
+        function mostrarTooltip(mensagem, duracao = 3000) {
+            // Criar tooltip dinamicamente se não existir
+            let tooltip = document.getElementById('tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.id = 'tooltip';
+                tooltip.className = 'tooltip';
+                document.body.appendChild(tooltip);
+            }
+            
+            tooltip.textContent = mensagem;
+            tooltip.style.display = 'block';
+            tooltip.style.position = 'fixed';
+            tooltip.style.top = '50%';
+            tooltip.style.left = '50%';
+            tooltip.style.transform = 'translate(-50%, -50%)';
+            tooltip.style.backgroundColor = '#10b981';
+            tooltip.style.color = 'white';
+            tooltip.style.padding = '12px 20px';
+            tooltip.style.borderRadius = '6px';
+            tooltip.style.fontSize = '14px';
+            tooltip.style.fontWeight = '500';
+            tooltip.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+            tooltip.style.zIndex = '9999';
+            tooltip.style.maxWidth = '400px';
+            tooltip.style.textAlign = 'center';
+            tooltip.style.animation = 'fadeIn 0.3s ease-in';
+
+            setTimeout(() => {
+                tooltip.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    tooltip.style.display = 'none';
+                }, 300);
+            }, duracao);
+        }
+
+        // Auto-calcular valor do tributo quando mudarem os campos
+        document.getElementById('codigoReceita').addEventListener('change', calcularTributo);
+        document.getElementById('valorBase').addEventListener('input', calcularTributo);
+        document.getElementById('aliquota').addEventListener('input', calcularTributo);
+
+        function calcularTributo() {
+            const valorBase = parseFloat(document.getElementById('valorBase').value) || 0;
+            const aliquota = parseFloat(document.getElementById('aliquota').value) || 0;
+            
+            if (valorBase > 0 && aliquota > 0) {
+                const valorCalculado = (valorBase * aliquota) / 100;
+                document.getElementById('valorTributo').value = valorCalculado.toFixed(2);
+            }
+        }
+
+        // Auto-calcular valor do IRRF
+        document.getElementById('valorBaseIrrf').addEventListener('input', calcularIrrf);
+        document.getElementById('aliquotaIrrf').addEventListener('input', calcularIrrf);
+
+        function calcularIrrf() {
+            const valorBase = parseFloat(document.getElementById('valorBaseIrrf').value) || 0;
+            const aliquota = parseFloat(document.getElementById('aliquotaIrrf').value) || 0;
+            
+            if (valorBase > 0 && aliquota > 0) {
+                const valorCalculado = (valorBase * aliquota) / 100;
+                document.getElementById('valorIrrf').value = valorCalculado.toFixed(2);
+            }
+        }
+
+        // Inicializar wizard
+        atualizarWizard();
+    </script>
+</body>
+</html>
